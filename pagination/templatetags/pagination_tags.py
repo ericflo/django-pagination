@@ -6,7 +6,7 @@ from django import template
 from pagination.registration import get_registry, default_pagination
 registry = get_registry()
 from django.db.models.query import QuerySet
-from django.core.paginator import QuerySetPaginator, InvalidPage
+from django.core.paginator import Paginator, QuerySetPaginator, InvalidPage
 #from django.template.loader import render_to_string
 
 register = template.Library()
@@ -32,11 +32,20 @@ class AutoPaginateNode(template.Node):
             try:
                 key = self.queryset_var.var
                 value = self.queryset_var.resolve(context)
-                model = value.model
+                if issubclass(value.__class__, QuerySet):
+                    model = value.model
+                    paginator_class = QuerySetPaginator
+                else:
+                    value = list(value)
+                    try:
+                        model = value[0].__class__
+                    except IndexError:
+                        return u''
+                    paginator_class = Paginator
                 pagination = registry.get_for_model(model)
                 if pagination is None:
                     pagination = default_pagination
-                paginator = QuerySetPaginator(value, pagination)
+                paginator = paginator_class(value, pagination)
                 try:
                     page_obj = paginator.page(context['request'].page)
                 except:
@@ -65,36 +74,38 @@ class AutoPaginateNode(template.Node):
         return u''
 
 def paginate(context, window=4):
-    paginator = context['paginator']
-    page_obj = context['page_obj']
-    page_range = paginator.page_range
-    first = set(page_range[:window])
-    last = set(page_range[-window:])
-    current_start = page_obj.number-1-window
-    if current_start < 0:
-        current_start = 0
-    current_end = page_obj.number-1+window
-    if current_end < 0:
-        current_end = 0
-    current = set(page_range[current_start:current_end])
-    pages = []
-    if len(first.intersection(current)) == 0:
-        pages.extend(sorted(list(first)))
-        pages.append(None)
-        pages.extend(sorted(list(current)))
-    else:
-        pages.extend(sorted(list(first.union(current))))
-    if len(current.intersection(last)) == 0:
-        pages.append(None)
-        pages.extend(sorted(list(last)))
-    else:
-        pages.extend(sorted(list(last.difference(current))))
-    return { 
-        'pages': pages,
-        'page_obj': page_obj,
-        'paginator': paginator,
-        'is_paginated': paginator.count > paginator.per_page,
-    }
-    
+    try:
+        paginator = context['paginator']
+        page_obj = context['page_obj']
+        page_range = paginator.page_range
+        first = set(page_range[:window])
+        last = set(page_range[-window:])
+        current_start = page_obj.number-1-window
+        if current_start < 0:
+            current_start = 0
+        current_end = page_obj.number-1+window
+        if current_end < 0:
+            current_end = 0
+        current = set(page_range[current_start:current_end])
+        pages = []
+        if len(first.intersection(current)) == 0:
+            pages.extend(sorted(list(first)))
+            pages.append(None)
+            pages.extend(sorted(list(current)))
+        else:
+            pages.extend(sorted(list(first.union(current))))
+        if len(current.intersection(last)) == 0:
+            pages.append(None)
+            pages.extend(sorted(list(last)))
+        else:
+            pages.extend(sorted(list(last.difference(current))))
+        return { 
+            'pages': pages,
+            'page_obj': page_obj,
+            'paginator': paginator,
+            'is_paginated': paginator.count > paginator.per_page,
+        }
+    except KeyError:
+        return u''
 register.inclusion_tag('pagination/pagination.html', takes_context=True)(paginate)
 register.tag('autopaginate', do_autopaginate)
