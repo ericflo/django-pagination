@@ -89,14 +89,19 @@ def paginate(context, window=4):
         current = set(page_range[current_start:current_end])
         pages = []
         if len(first.intersection(current)) == 0:
-            pages.extend(sorted(list(first)))
-            pages.append(None)
-            pages.extend(sorted(list(current)))
+            first_list = sorted(list(first))
+            second_list = sorted(list(current))
+            pages.extend(first_list)
+            if first_list[-1] + 1 != second_list[0]:
+                pages.append(None)
+            pages.extend(second_list)
         else:
             pages.extend(sorted(list(first.union(current))))
         if len(current.intersection(last)) == 0:
-            pages.append(None)
-            pages.extend(sorted(list(last)))
+            second_list = sorted(list(last))
+            if pages[-1] + 1 != second_list[0]:
+                pages.append(None)
+            pages.extend(second_list)
         else:
             pages.extend(sorted(list(last.difference(current))))
         return { 
