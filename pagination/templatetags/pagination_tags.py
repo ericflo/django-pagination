@@ -92,14 +92,24 @@ def paginate(context, window=4):
             first_list = sorted(list(first))
             second_list = sorted(list(current))
             pages.extend(first_list)
-            if first_list[-1] + 1 != second_list[0]:
+            diff = second_list[0] - first_list[-1] 
+            if diff == 2:
+                pages.append(second_list[0] - 1)
+            elif diff == 1:
+                pass
+            else:
                 pages.append(None)
             pages.extend(second_list)
         else:
             pages.extend(sorted(list(first.union(current))))
         if len(current.intersection(last)) == 0:
             second_list = sorted(list(last))
-            if pages[-1] + 1 != second_list[0]:
+            diff = second_list[0] - pages[-1]
+            if diff == 2:
+                pages.append(second_list[0] - 1)
+            elif diff == 1:
+                pass
+            else:
                 pages.append(None)
             pages.extend(second_list)
         else:
