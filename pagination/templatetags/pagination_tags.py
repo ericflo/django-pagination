@@ -114,11 +114,16 @@ def paginate(context, window=4):
             pages.extend(second_list)
         else:
             pages.extend(sorted(list(last.difference(current))))
-        return { 
+        
+        getvars = context['request'].GET.copy()
+        if 'page' in getvars:
+            del getvars['page']
+        return {
             'pages': pages,
             'page_obj': page_obj,
             'paginator': paginator,
             'is_paginated': paginator.count > paginator.per_page,
+            'getvars': "&%s" % getvars.urlencode()
         }
     except KeyError:
         return u''
