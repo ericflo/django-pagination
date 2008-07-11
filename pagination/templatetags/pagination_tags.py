@@ -175,7 +175,10 @@ def paginate(context, window=DEFAULT_WINDOW):
             getvars = context['request'].GET.copy()
             if 'page' in getvars:
                 del getvars['page']
-            to_return['getvars'] = "&%s" % getvars.urlencode()
+            if len(getvars.keys()) > 0:
+                to_return['getvars'] = "&%s" % getvars.urlencode()
+            else:
+                to_return['getvars'] = ''
         return to_return
     except KeyError:
         return {}
