@@ -71,7 +71,9 @@ class AutoPaginateNode(template.Node):
         paginator = paginator_class(value, self.paginate_by)
         try:
             page_obj = paginator.page(context['request'].page)
-        except:
+        except InvalidPage:
+            context[key] = []
+            context['invalid_page'] = True
             return u''
         context[key] = page_obj.object_list
         context['paginator'] = paginator
