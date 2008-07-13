@@ -26,6 +26,7 @@
 ...     def __iter__(self): yield self.__dict__.__iter__
 ...     def copy(self): return self
 ...     def urlencode(self): return u''
+...     def keys(self): return []
 >>> class RequestProxy(object):
 ...     page = 1
 ...     GET = GetProxy()
