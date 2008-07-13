@@ -10,19 +10,19 @@ installation, which is covered in INSTALL.txt in this same directory.)
 1. List this application in the ``INSTALLED_APPS`` portion of your settings
    file.  Your settings file might look something like:
    
-    INSTALLED_APPS = (
-        # ...
-        'pagination',
-    )
+       INSTALLED_APPS = (
+           # ...
+           'pagination',
+       )
 
 
 2. Install the pagination middleware.  Your settings file might look something
    like:
    
-    MIDDLEWARE_CLASSES = (
-        # ...
-        'pagination.middleware.PaginationMiddleware',
-    )
+       MIDDLEWARE_CLASSES = (
+           # ...
+           'pagination.middleware.PaginationMiddleware',
+       )
 
 
 3. Add this line at the top of your template to load the pagination tags:
