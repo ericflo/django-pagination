@@ -10,6 +10,7 @@ register = template.Library()
 
 DEFAULT_PAGINATION = 20
 DEFAULT_WINDOW = 4
+DEFAULT_ORPHANS = 0
 
 def do_autopaginate(parser, token):
     """
@@ -24,6 +25,16 @@ def do_autopaginate(parser, token):
         except ValueError:
             raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % split[2])
         return AutoPaginateNode(split[1], paginate_by=paginate_by)
+    elif len(split) == 4:
+        try:
+            paginate_by = int(split[2])
+        except ValueError:
+            raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % split[2])
+        try:
+            orphans = int(split[3])
+        except ValueError:
+            raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % split[3])           
+        return AutoPaginateNode(split[1], paginate_by=paginate_by, orphans=orphans)
     else:
         raise template.TemplateSyntaxError('%r tag takes one required argument and one optional argument' % split[0])
 
@@ -51,9 +62,10 @@ class AutoPaginateNode(template.Node):
         tag.  If you choose not to use *{% paginate %}*, make sure to display the
         list of availabale pages, or else the application may seem to be buggy.
     """
-    def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION):
+    def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION, orphans=DEFAULT_ORPHANS):
         self.queryset_var = template.Variable(queryset_var)
         self.paginate_by = paginate_by
+        self.orphans = orphans
 
     def render(self, context):
         key = self.queryset_var.var
@@ -68,7 +80,7 @@ class AutoPaginateNode(template.Node):
             except IndexError:
                 return u''
             paginator_class = Paginator
-        paginator = paginator_class(value, self.paginate_by)
+        paginator = paginator_class(value, self.paginate_by, self.orphans)
         try:
             page_obj = paginator.page(context['request'].page)
         except InvalidPage:
