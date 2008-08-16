@@ -5,6 +5,7 @@ except NameError:
 from django import template
 from django.db.models.query import QuerySet
 from django.core.paginator import Paginator, QuerySetPaginator, InvalidPage
+from django.conf import settings
 
 register = template.Library()
 
