@@ -8,9 +8,9 @@ from django.core.paginator import Paginator, QuerySetPaginator, InvalidPage
 
 register = template.Library()
 
-DEFAULT_PAGINATION = 20
-DEFAULT_WINDOW = 4
-DEFAULT_ORPHANS = 0
+DEFAULT_PAGINATION = getattr(settings, 'PAGINATION_DEFAULT_PAGINATION', 20)
+DEFAULT_WINDOW = getattr(settings, 'PAGINATION_DEFAULT_WINDOW', 4)
+DEFAULT_ORPHANS = getattr(settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
 
 def do_autopaginate(parser, token):
     """
