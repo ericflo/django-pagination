@@ -4,7 +4,7 @@ except NameError:
     from sets import Set as set
 from django import template
 from django.db.models.query import QuerySet
-from django.core.paginator import Paginator, QuerySetPaginator, InvalidPage
+from django.core.paginator import Paginator, InvalidPage
 from django.conf import settings
 
 register = template.Library()
@@ -43,16 +43,9 @@ class AutoPaginateNode(template.Node):
     """
     Emits the required objects to allow for Digg-style pagination.
     
-    First, it looks in the current context for the variable specified.  This
-    should be either a QuerySet or a list.
-    
-    1. If it is a QuerySet, this ``AutoPaginateNode`` will emit a 
-       ``QuerySetPaginator`` and the current page object into the context names
-       ``paginator`` and ``page_obj``, respectively.
-    
-    2. If it is a list, this ``AutoPaginateNode`` will emit a simple
-       ``Paginator`` and the current page object into the context names 
-       ``paginator`` and ``page_obj``, respectively.
+    First, it looks in the current context for the variable specified, and using
+    that object, it emits a simple ``Paginator`` and the current page object 
+    into the context names ``paginator`` and ``page_obj``, respectively.
     
     It will then replace the variable specified with only the objects for the
     current page.
@@ -61,7 +54,7 @@ class AutoPaginateNode(template.Node):
         
         It is recommended to use *{% paginate %}* after using the autopaginate
         tag.  If you choose not to use *{% paginate %}*, make sure to display the
-        list of availabale pages, or else the application may seem to be buggy.
+        list of available pages, or else the application may seem to be buggy.
     """
     def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION, orphans=DEFAULT_ORPHANS):
         self.queryset_var = template.Variable(queryset_var)
@@ -71,17 +64,7 @@ class AutoPaginateNode(template.Node):
     def render(self, context):
         key = self.queryset_var.var
         value = self.queryset_var.resolve(context)
-        if issubclass(value.__class__, QuerySet):
-            model = value.model
-            paginator_class = QuerySetPaginator
-        else:
-            value = list(value)
-            try:
-                model = value[0].__class__
-            except IndexError:
-                return u''
-            paginator_class = Paginator
-        paginator = paginator_class(value, self.paginate_by, self.orphans)
+        paginator = Paginator(value, self.paginate_by, self.orphans)
         try:
             page_obj = paginator.page(context['request'].page)
         except InvalidPage:
