@@ -24,13 +24,22 @@ installation, which is covered in INSTALL.txt in this same directory.)
            'pagination.middleware.PaginationMiddleware',
        )
 
+3. If it's not already added in your setup, add the request context processor.
+   Note that context processors are set by default implicitly, so to set them
+   explicitly, you need to copy and paste this code into your settings::
+   
+        ("django.core.context_processors.auth",
+        "django.core.context_processors.debug",
+        "django.core.context_processors.i18n",
+        "django.core.context_processors.media",
+        "django.core.context_processors.request")
 
-3. Add this line at the top of your template to load the pagination tags:
+4. Add this line at the top of your template to load the pagination tags:
 
        {% load pagination_tags %}
 
 
-4. Decide on a variable that you would like to paginate, and use the
+5. Decide on a variable that you would like to paginate, and use the
    autopaginate tag on that variable before iterating over it.  This could 
    take one of two forms (using the canonical ``object_list`` as an example
    variable):
@@ -47,7 +56,7 @@ installation, which is covered in INSTALL.txt in this same directory.)
    you can iterate over the ``object_list`` like you normally would.
    
 
-5. Now you want to display the current page and the available pages, so
+6. Now you want to display the current page and the available pages, so
    somewhere after having used autopaginate, use the paginate inclusion tag:
    
        {% paginate %}
