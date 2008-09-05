@@ -26,7 +26,8 @@ installation, which is covered in INSTALL.txt in this same directory.)
 
 3. If it's not already added in your setup, add the request context processor.
    Note that context processors are set by default implicitly, so to set them
-   explicitly, you need to copy and paste this code into your settings::
+   explicitly, you need to copy and paste this code into your under
+   the value TEMPLATE_CONTEXT_PROCESSORS::
    
         ("django.core.context_processors.auth",
         "django.core.context_processors.debug",
