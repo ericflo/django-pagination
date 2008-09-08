@@ -122,8 +122,8 @@ def paginate(context, window=DEFAULT_WINDOW):
         # If there's no overlap between the first set of pages and the current
         # set of pages, then there's a possible need for elusion.
         if len(first.intersection(current)) == 0:
-            first_list = sorted(list(first))
-            second_list = sorted(list(current))
+            first_list = sorted(first)
+            second_list = sorted(current)
             pages.extend(first_list)
             diff = second_list[0] - first_list[-1]
             # If there is a gap of two, between the last page of the first
@@ -141,11 +141,11 @@ def paginate(context, window=DEFAULT_WINDOW):
                 pages.append(None)
             pages.extend(second_list)
         else:
-            pages.extend(sorted(list(first.union(current))))
+            pages.extend(sorted(first.union(current)))
         # If there's no overlap between the current set of pages and the last
         # set of pages, then there's a possible need for elusion.
         if len(current.intersection(last)) == 0:
-            second_list = sorted(list(last))
+            second_list = sorted(last)
             diff = second_list[0] - pages[-1]
             # If there is a gap of two, between the last page of the current
             # set and the first page of the last set, then we're missing a 
@@ -162,7 +162,7 @@ def paginate(context, window=DEFAULT_WINDOW):
                 pages.append(None)
             pages.extend(second_list)
         else:
-            pages.extend(sorted(list(last.difference(current))))
+            pages.extend(sorted(last.difference(current)))
         to_return = {
             'pages': pages,
             'page_obj': page_obj,
