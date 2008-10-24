@@ -54,5 +54,8 @@ u'\\n\\n<div class="pagination">...
 >>> t = Template("{% load pagination_tags %}{% autopaginate var by %}{% paginate %}")
 >>> t.render(Context({'var': range(21), 'by': 20, 'request': RequestProxy()}))
 u'\\n\\n<div class="pagination">...
+>>> t = Template("{% load pagination_tags %}{% autopaginate var by as foo %}{{ foo }}")
+>>> t.render(Context({'var': range(21), 'by': 20, 'request': RequestProxy()}))
+u'[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]'
 >>>
 """

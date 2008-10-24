@@ -18,18 +18,35 @@ def do_autopaginate(parser, token):
     Splits the arguments to the autopaginate tag and formats them correctly.
     """
     split = token.split_contents()
+    as_index = None
+    context_var = None
+    for i, bit in enumerate(split):
+        if bit == 'as':
+            as_index = i
+            break
+    if as_index is not None:
+        try:
+            context_var = split[as_index + 1]
+        except IndexError:
+            raise template.TemplateSyntaxError("Context variable assignment " +\
+                "must take the form of {%% %r object.example_set.all ... as " +\
+                "context_var_name %%}" % split[0])
+        del split[as_index:as_index + 2]
     if len(split) == 2:
         return AutoPaginateNode(split[1])
     elif len(split) == 3:
-        return AutoPaginateNode(split[1], paginate_by=split[2])
+        return AutoPaginateNode(split[1], paginate_by=split[2], 
+            context_var=context_var)
     elif len(split) == 4:
         try:
             orphans = int(split[3])
         except ValueError:
-            raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % split[3])           
-        return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans)
+            raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % split[3])
+        return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans,
+            context_var=context_var)
     else:
-        raise template.TemplateSyntaxError('%r tag takes one required argument and one optional argument' % split[0])
+        raise template.TemplateSyntaxError('%r tag takes one required ' + \
+            'argument and one optional argument' % split[0])
 
 class AutoPaginateNode(template.Node):
     """
@@ -48,13 +65,15 @@ class AutoPaginateNode(template.Node):
         tag.  If you choose not to use *{% paginate %}*, make sure to display the
         list of available pages, or else the application may seem to be buggy.
     """
-    def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION, orphans=DEFAULT_ORPHANS):
+    def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION,
+        orphans=DEFAULT_ORPHANS, context_var=None):
         self.queryset_var = template.Variable(queryset_var)
         if isinstance(paginate_by, int):
             self.paginate_by = paginate_by
         else:
             self.paginate_by = template.Variable(paginate_by)
         self.orphans = orphans
+        self.context_var = context_var
 
     def render(self, context):
         key = self.queryset_var.var
@@ -70,7 +89,10 @@ class AutoPaginateNode(template.Node):
             context[key] = []
             context['invalid_page'] = True
             return u''
-        context[key] = page_obj.object_list
+        if self.context_var is not None:
+            context[self.context_var] = page_obj.object_list
+        else:
+            context[key] = page_obj.object_list
         context['paginator'] = paginator
         context['page_obj'] = page_obj
         return u''
