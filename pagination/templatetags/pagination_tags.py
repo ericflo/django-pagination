@@ -185,7 +185,7 @@ def paginate(context, window=DEFAULT_WINDOW):
             else:
                 to_return['getvars'] = ''
         return to_return
-    except KeyError:
+    except KeyError, AttributeError:
         return {}
 register.inclusion_tag('pagination/pagination.html', takes_context=True)(paginate)
 register.tag('autopaginate', do_autopaginate)
