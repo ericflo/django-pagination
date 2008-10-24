@@ -21,21 +21,13 @@ def do_autopaginate(parser, token):
     if len(split) == 2:
         return AutoPaginateNode(split[1])
     elif len(split) == 3:
-        try:
-            paginate_by = int(split[2])
-        except ValueError:
-            raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % split[2])
-        return AutoPaginateNode(split[1], paginate_by=paginate_by)
+        return AutoPaginateNode(split[1], paginate_by=split[2])
     elif len(split) == 4:
-        try:
-            paginate_by = int(split[2])
-        except ValueError:
-            raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % split[2])
         try:
             orphans = int(split[3])
         except ValueError:
             raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % split[3])           
-        return AutoPaginateNode(split[1], paginate_by=paginate_by, orphans=orphans)
+        return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans)
     else:
         raise template.TemplateSyntaxError('%r tag takes one required argument and one optional argument' % split[0])
 
@@ -58,13 +50,20 @@ class AutoPaginateNode(template.Node):
     """
     def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION, orphans=DEFAULT_ORPHANS):
         self.queryset_var = template.Variable(queryset_var)
-        self.paginate_by = paginate_by
+        if isinstance(paginate_by, int):
+            self.paginate_by = paginate_by
+        else:
+            self.paginate_by = template.Variable(paginate_by)
         self.orphans = orphans
 
     def render(self, context):
         key = self.queryset_var.var
         value = self.queryset_var.resolve(context)
-        paginator = Paginator(value, self.paginate_by, self.orphans)
+        if isinstance(self.paginate_by, int):
+            paginate_by = self.paginate_by
+        else:
+            paginate_by = self.paginate_by.resolve(context)
+        paginator = Paginator(value, paginate_by, self.orphans)
         try:
             page_obj = paginator.page(context['request'].page)
         except InvalidPage:
