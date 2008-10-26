@@ -3,7 +3,6 @@ try:
 except NameError:
     from sets import Set as set
 from django import template
-from django.db.models.query import QuerySet
 from django.core.paginator import Paginator, InvalidPage
 from django.conf import settings
 
@@ -145,7 +144,7 @@ def paginate(context, window=DEFAULT_WINDOW):
         if len(first.intersection(current)) == 0:
             first_list = list(first)
             first_list.sort()
-            second_list = list(second)
+            second_list = list(current)
             second_list.sort()
             pages.extend(first_list)
             diff = second_list[0] - first_list[-1]

@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.0.2'
+version = '1.0.4'
 
 LONG_DESCRIPTION = """
 How to use django-pagination
@@ -76,7 +76,7 @@ a way to navigate between the different pages--all without touching your views.
 """
 
 setup(
-    name='pagination',
+    name='django-pagination',
     version=version,
     description="django-pagination",
     long_description=LONG_DESCRIPTION,
@@ -89,7 +89,7 @@ setup(
     keywords='pagination,django',
     author='Eric Florenzano',
     author_email='floguy@gmail.com',
-    url='http://www.eflorenzano.com/',
+    url='http://django-pagination.googlecode.com/',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,
