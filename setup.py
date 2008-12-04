@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.0.4'
+version = '1.0.5'
 
 LONG_DESCRIPTION = """
 How to use django-pagination
@@ -73,6 +73,32 @@ installation, which is covered in INSTALL.txt in this same directory.)
 
 That's it!  You have now paginated ``object_list`` and given users of the site
 a way to navigate between the different pages--all without touching your views.
+
+
+Optional Settings
+------------------
+
+In django-pagination, there are no required settings.  There are, however, a
+small set of optional settings useful for changing the default behavior of the
+pagination tags.  Here's an overview:
+
+``PAGINATION_DEFAULT_PAGINATION``
+    The default amount of items to show on a page if no number is specified.
+
+``PAGINATION_DEFAULT_WINDOW``
+    The number of items to the left and to the right of the current page to
+    display (accounting for ellipses).
+
+``PAGINATION_DEFAULT_ORPHANS``
+    The number of orphans allowed.  According to the Django documentation,
+    orphans are defined as::
+    
+        The minimum number of items allowed on the last page, defaults to zero.
+
+``PAGINATION_INVALID_PAGE_RAISES_404``
+    Determines whether an invalid page raises an ``Http404`` or just sets the
+    ``invalid_page`` context variable.  ``True`` does the former and ``False``
+    does the latter.
 """
 
 setup(

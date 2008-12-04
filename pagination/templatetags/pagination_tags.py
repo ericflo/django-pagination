@@ -2,7 +2,9 @@ try:
     set
 except NameError:
     from sets import Set as set
+
 from django import template
+from django.http import Http404
 from django.core.paginator import Paginator, InvalidPage
 from django.conf import settings
 
@@ -11,6 +13,8 @@ register = template.Library()
 DEFAULT_PAGINATION = getattr(settings, 'PAGINATION_DEFAULT_PAGINATION', 20)
 DEFAULT_WINDOW = getattr(settings, 'PAGINATION_DEFAULT_WINDOW', 4)
 DEFAULT_ORPHANS = getattr(settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
+INVALID_PAGE_RAISES_404 = getattr(settings, 'PAGINATION_INVALID_PAGE_RAISES_404',
+    False)
 
 def do_autopaginate(parser, token):
     """
@@ -85,6 +89,9 @@ class AutoPaginateNode(template.Node):
         try:
             page_obj = paginator.page(context['request'].page)
         except InvalidPage:
+            if INVALID_PAGE_RAISES_404:
+                raise Http404('Invalid page requested.  If DEBUG were set to ' +
+                    'False, an HTTP 404 page would have been shown instead.')
             context[key] = []
             context['invalid_page'] = True
             return u''
