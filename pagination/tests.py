@@ -58,4 +58,32 @@ u'\\n\\n<div class="pagination">...
 >>> t.render(Context({'var': range(21), 'by': 20, 'request': RequestProxy()}))
 u'[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]'
 >>>
+
+# Testing InfinitePaginator
+
+>>> from paginator import InfinitePaginator
+>>> InfinitePaginator
+<class 'pagination.paginator.InfinitePaginator'>
+>>> p = InfinitePaginator(range(20), 2, link_template='/bacon/page/%d')
+>>> p.validate_number(2)
+2
+>>> p.orphans
+0
+>>> p3 = p.page(3)
+>>> p3
+<Page 3>
+>>> p3.end_index()
+6
+>>> p3.has_next()
+True
+>>> p3.has_previous()
+True
+>>> p.page(10).has_next()
+False
+>>> p.page(1).has_previous()
+False
+>>> p3.next_link()
+'/bacon/page/4'
+>>> p3.previous_link()
+'/bacon/page/2'
 """
