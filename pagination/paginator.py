@@ -5,10 +5,10 @@ class InfinitePaginator(Paginator):
         Paginator designed for cases when it's not important to know how many total pages.
         This is useful for any object_list that has no count() method or can be used to
         improve performance for MySQL by removing counts.
-        
+
         The orphans parameter has been removed for simplicity and there's a link template string
         for creating the links to the next and previous pages.
-        
+
         Class name is pronounced verbally in a deep tone.
     '''
 
@@ -81,7 +81,7 @@ class InfinitePage(Page):
         relative to total objects found (hits).
         """
         return (self.number - 1) * self.paginator.per_page + len(self.object_list)
-    
+
     '''Bonus methods for creating links'''
 
     def next_link(self):
