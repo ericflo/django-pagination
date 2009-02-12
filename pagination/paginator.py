@@ -93,3 +93,59 @@ class InfinitePage(Page):
         if self.has_previous():
             return self.paginator.link_template % (self.number - 1)
         return None
+
+class FinitePaginator(InfinitePaginator):
+    '''
+        Paginator for cases when the list of items is already finite.
+
+        A good example is a list generated from an API call. This is a subclass
+        of InfinitePaginator because we have no idea how many items exist in the
+        full collection.
+
+        To accurately determine if the next page exists, a FinitePaginator MUST be created
+        with an object_list_plus that may contain more items than the per_page count.
+        Typically, you'll have an object_list_plus with one extra item (if there's a next page).
+        You'll also need to supply the offset from the full collection in order to get the
+        page start_index.
+
+        This is a very silly class but useful if you love the Django pagination conventions.
+    '''
+
+    def __init__(self, object_list_plus, per_page, offset=None, allow_empty_first_page=True, link_template='/page/%d/'):
+        super(FinitePaginator, self).__init__(object_list_plus, per_page, allow_empty_first_page, link_template)
+        self.offset = offset
+
+    def validate_number(self, number):
+        super(FinitePaginator, self).validate_number(number)
+        # check for an empty list to see if the page exists
+        if not self.object_list:
+            if number == 1 and self.allow_empty_first_page:
+                pass
+            else:
+                raise EmptyPage('That page contains no results')
+        return number
+
+    def page(self, number):
+        "Returns a Page object for the given 1-based page number."
+        number = self.validate_number(number)
+        # remove the extra item(s) when creating the page
+        page_items = self.object_list[:self.per_page]
+        return FinitePage(page_items, number, self)
+
+class FinitePage(InfinitePage):
+
+    def has_next(self):
+        "Checks for one more item than last on this page."
+        try:
+            next_item = self.paginator.object_list[self.paginator.per_page]
+        except IndexError:
+            return False
+        return True
+
+    def start_index(self):
+        """
+        Returns the 1-based index of the first object on this page,
+        relative to total objects in the paginator.
+        """
+        ## TODO should this holler if you haven't defined the offset?
+        return self.paginator.offset
