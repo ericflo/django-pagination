@@ -30,32 +30,24 @@
 
 >>> t = Template("{% load pagination_tags %}{% autopaginate var 2 %}{% paginate %}")
 
-# WARNING: Please, please nobody read this portion of the code!
->>> class GetProxy(object):
-...     def __iter__(self): yield self.__dict__.__iter__
-...     def copy(self): return self
-...     def urlencode(self): return u''
-...     def keys(self): return []
->>> class RequestProxy(object):
+>>> from django.http import HttpRequest as DjangoHttpRequest
+>>> class HttpRequest(DjangoHttpRequest):
 ...     page = 1
-...     GET = GetProxy()
->>>
-# ENDWARNING
 
->>> t.render(Context({'var': range(21), 'request': RequestProxy()}))
+>>> t.render(Context({'var': range(21), 'request': HttpRequest()}))
 u'\\n\\n<div class="pagination">...
 >>>
 >>> t = Template("{% load pagination_tags %}{% autopaginate var %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'request': RequestProxy()}))
+>>> t.render(Context({'var': range(21), 'request': HttpRequest()}))
 u'\\n\\n<div class="pagination">...
 >>> t = Template("{% load pagination_tags %}{% autopaginate var 20 %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'request': RequestProxy()}))
+>>> t.render(Context({'var': range(21), 'request': HttpRequest()}))
 u'\\n\\n<div class="pagination">...
 >>> t = Template("{% load pagination_tags %}{% autopaginate var by %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'by': 20, 'request': RequestProxy()}))
+>>> t.render(Context({'var': range(21), 'by': 20, 'request': HttpRequest()}))
 u'\\n\\n<div class="pagination">...
 >>> t = Template("{% load pagination_tags %}{% autopaginate var by as foo %}{{ foo }}")
->>> t.render(Context({'var': range(21), 'by': 20, 'request': RequestProxy()}))
+>>> t.render(Context({'var': range(21), 'by': 20, 'request': HttpRequest()}))
 u'[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]'
 >>>
 
@@ -128,4 +120,11 @@ True
 >>> p2.previous_link()
 '/bacon/page/1'
 
+>>> from pagination.middleware import PaginationMiddleware
+>>> from django.core.handlers.wsgi import WSGIRequest
+>>> from StringIO import StringIO
+>>> middleware = PaginationMiddleware()
+>>> request = WSGIRequest({'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': 'multipart', 'wsgi.input': StringIO()})
+>>> middleware.process_request(request)
+>>> request.upload_handlers.append('asdf')
 """

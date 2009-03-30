@@ -70,6 +70,16 @@ That's it!  You have now paginated ``object_list`` and given users of the site
 a way to navigate between the different pages--all without touching your views.
 
 
+A Note About Uploads
+--------------------
+
+It is important, when using django-pagination in conjunction with file uploads,
+to be aware of when ``request.page`` is accessed.  As soon as ``request.page``
+is accessed, ``request.upload_handlers`` is frozen and cannot be altered in any
+way.  It's a good idea to access the ``page`` attribute on the request object 
+as late as possible in your views.
+
+
 Optional Settings
 ------------------
 
