@@ -13,8 +13,8 @@ register = template.Library()
 DEFAULT_PAGINATION = getattr(settings, 'PAGINATION_DEFAULT_PAGINATION', 20)
 DEFAULT_WINDOW = getattr(settings, 'PAGINATION_DEFAULT_WINDOW', 4)
 DEFAULT_ORPHANS = getattr(settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
-INVALID_PAGE_RAISES_404 = getattr(settings, 'PAGINATION_INVALID_PAGE_RAISES_404',
-    False)
+INVALID_PAGE_RAISES_404 = getattr(settings,
+    'PAGINATION_INVALID_PAGE_RAISES_404', False)
 
 def do_autopaginate(parser, token):
     """
@@ -31,8 +31,8 @@ def do_autopaginate(parser, token):
         try:
             context_var = split[as_index + 1]
         except IndexError:
-            raise template.TemplateSyntaxError("Context variable assignment " +\
-                "must take the form of {%% %r object.example_set.all ... as " +\
+            raise template.TemplateSyntaxError("Context variable assignment " +
+                "must take the form of {%% %r object.example_set.all ... as " +
                 "context_var_name %%}" % split[0])
         del split[as_index:as_index + 2]
     if len(split) == 2:
@@ -44,11 +44,12 @@ def do_autopaginate(parser, token):
         try:
             orphans = int(split[3])
         except ValueError:
-            raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % split[3])
+            raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
+                % split[3])
         return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans,
             context_var=context_var)
     else:
-        raise template.TemplateSyntaxError('%r tag takes one required ' + \
+        raise template.TemplateSyntaxError('%r tag takes one required ' +
             'argument and one optional argument' % split[0])
 
 class AutoPaginateNode(template.Node):
@@ -214,5 +215,7 @@ def paginate(context, window=DEFAULT_WINDOW):
         return to_return
     except KeyError, AttributeError:
         return {}
-register.inclusion_tag('pagination/pagination.html', takes_context=True)(paginate)
+
+register.inclusion_tag('pagination/pagination.html', takes_context=True)(
+    paginate)
 register.tag('autopaginate', do_autopaginate)
