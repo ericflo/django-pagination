@@ -104,7 +104,7 @@ class AutoPaginateNode(template.Node):
         context['page_obj'] = page_obj
         return u''
 
-def paginate(context, window=DEFAULT_WINDOW, hashtag=None):
+def paginate(context, window=DEFAULT_WINDOW):
     """
     Renders the ``pagination/pagination.html`` template, resulting in a
     Digg-like display of the available pages, given the current page.  If there
@@ -209,7 +209,6 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=None):
             'records': records,
             'page_obj': page_obj,
             'paginator': paginator,
-            'hashtag': hashtag,
             'is_paginated': paginator.count > paginator.per_page,
         }
         if 'request' in context:
