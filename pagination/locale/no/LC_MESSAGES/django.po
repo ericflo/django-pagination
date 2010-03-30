@@ -19,9 +19,9 @@ msgstr ""
 #: templates/pagination/pagination.html:5
 #: templates/pagination/pagination.html:7
 msgid "previous"
-msgstr "forrige"
+msgstr "Forrige"
 
 #: templates/pagination/pagination.html:21
 #: templates/pagination/pagination.html:23
 msgid "next"
-msgstr "neste"
+msgstr "Neste"
