@@ -4,8 +4,22 @@
 >>> from django.template import Template, Context
 
 >>> p = Paginator(range(15), 2)
->>> paginate({'paginator': p, 'page_obj': p.page(1)})['pages']
+>>> pg = paginate({'paginator': p, 'page_obj': p.page(1)})
+>>> pg['pages']
 [1, 2, 3, 4, 5, 6, 7, 8]
+>>> pg['records']['first']
+1
+>>> pg['records']['last']
+2
+
+>>> p = Paginator(range(15), 2)
+>>> pg = paginate({'paginator': p, 'page_obj': p.page(8)})
+>>> pg['pages']
+[1, 2, 3, 4, 5, 6, 7, 8]
+>>> pg['records']['first']
+15
+>>> pg['records']['last']
+15
 
 >>> p = Paginator(range(17), 2)
 >>> paginate({'paginator': p, 'page_obj': p.page(1)})['pages']
@@ -25,8 +39,22 @@
 [1, 2]
 
 >>> p = Paginator(range(21), 2, 1)
->>> paginate({'paginator': p, 'page_obj': p.page(1)})['pages']
+>>> pg = paginate({'paginator': p, 'page_obj': p.page(1)})
+>>> pg['pages']
 [1, 2, 3, 4, None, 7, 8, 9, 10]
+>>> pg['records']['first']
+1
+>>> pg['records']['last']
+2
+
+>>> p = Paginator(range(21), 2, 1)
+>>> pg = paginate({'paginator': p, 'page_obj': p.page(10)})
+>>> pg['pages']
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+>>> pg['records']['first']
+19
+>>> pg['records']['last']
+21
 
 >>> t = Template("{% load pagination_tags %}{% autopaginate var 2 %}{% paginate %}")
 

@@ -104,7 +104,7 @@ class AutoPaginateNode(template.Node):
         context['page_obj'] = page_obj
         return u''
 
-def paginate(context, window=DEFAULT_WINDOW):
+def paginate(context, window=DEFAULT_WINDOW, hashtag=None):
     """
     Renders the ``pagination/pagination.html`` template, resulting in a
     Digg-like display of the available pages, given the current page.  If there
@@ -133,6 +133,11 @@ def paginate(context, window=DEFAULT_WINDOW):
         paginator = context['paginator']
         page_obj = context['page_obj']
         page_range = paginator.page_range
+        # Calculate the record range in the current page for display.
+        records = {'first': 1 + (page_obj.number - 1) * paginator.per_page}
+        records['last'] = records['first'] + paginator.per_page - 1
+        if records['last'] + paginator.orphans >= paginator.count:
+            records['last'] = paginator.count
         # First and last are simply the first *n* pages and the last *n* pages,
         # where *n* is the current window size.
         first = set(page_range[:window])
@@ -201,8 +206,10 @@ def paginate(context, window=DEFAULT_WINDOW):
         to_return = {
             'MEDIA_URL': settings.MEDIA_URL,
             'pages': pages,
+            'records': records,
             'page_obj': page_obj,
             'paginator': paginator,
+            'hashtag': hashtag,
             'is_paginated': paginator.count > paginator.per_page,
         }
         if 'request' in context:
