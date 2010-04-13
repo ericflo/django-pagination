@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.0.5.1'
+version = '1.0.6'
 
 LONG_DESCRIPTION = """
 How to use django-pagination
