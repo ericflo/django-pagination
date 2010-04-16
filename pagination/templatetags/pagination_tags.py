@@ -104,7 +104,8 @@ class AutoPaginateNode(template.Node):
         context['page_obj'] = page_obj
         return u''
 
-def paginate(context, window=DEFAULT_WINDOW, hashtag=None):
+
+def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
     """
     Renders the ``pagination/pagination.html`` template, resulting in a
     Digg-like display of the available pages, given the current page.  If there
