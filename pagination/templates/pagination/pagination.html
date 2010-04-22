@@ -2,25 +2,31 @@
 {% load i18n %}
 <div class="pagination">
     {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo; {% trans "previous" %}</a>
+        <a href="?page={{ page_obj.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">{{ previous_link_decorator }}{% trans "previous" %}</a>
     {% else %}
-        <span class="disabled prev">&lsaquo;&lsaquo; {% trans "previous" %}</span>
-    {% endif %}
-    {% for page in pages %}
-        {% if page %}
-            {% ifequal page page_obj.number %}
-                <span class="current page">{{ page }}</span>
-            {% else %}
-                <a href="?page={{ page }}{{ getvars }}{{ hashtag }}" class="page">{{ page }}</a>
-            {% endifequal %}
-        {% else %}
-            ...
+        {% if display_disabled_previous_link %}
+            <span class="disabled prev">{{ previous_link_decorator }}{% trans "previous" %}</span>    
         {% endif %}
-    {% endfor %}
+    {% endif %}
+    {% if display_page_links %}
+        {% for page in pages %}
+            {% if page %}
+                {% ifequal page page_obj.number %}
+                    <span class="current page">{{ page }}</span>
+                {% else %}
+                    <a href="?page={{ page }}{{ getvars }}{{ hashtag }}" class="page">{{ page }}</a>
+                {% endifequal %}
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}        
+    {% endif %}
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">{% trans "next" %} &rsaquo;&rsaquo;</a>
+        <a href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">{% trans "next" %}{{ next_link_decorator }}</a>
     {% else %}
-        <span class="disabled next">{% trans "next" %} &rsaquo;&rsaquo;</span>
+        {% if display_disabled_next_link %}
+            <span class="disabled next">{% trans "next" %}{{ next_link_decorator }}</span>
+        {% endif %}
     {% endif %}
 </div>
 {% endif %}

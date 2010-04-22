@@ -15,6 +15,11 @@ DEFAULT_WINDOW = getattr(settings, 'PAGINATION_DEFAULT_WINDOW', 4)
 DEFAULT_ORPHANS = getattr(settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
 INVALID_PAGE_RAISES_404 = getattr(settings,
     'PAGINATION_INVALID_PAGE_RAISES_404', False)
+DISPLAY_PAGE_LINKS = getattr(settings, 'PAGINATION_DISPLAY_PAGE_LINKS', True)
+PREVIOUS_LINK_DECORATOR = getattr(settings, 'PAGINATION_PREVIOUS_LINK_DECORATOR', "&lsaquo;&lsaquo; ")
+NEXT_LINK_DECORATOR = getattr(settings, 'PAGINATION_NEXT_LINK_DECORATOR', " &rsaquo;&rsaquo;")
+DISPLAY_DISABLED_PREVIOUS_LINK = getattr(settings, 'PAGINATION_DISPLAY_DISABLED_PREVIOUS_LINK', True)
+DISPLAY_DISABLED_NEXT_LINK = getattr(settings, 'PAGINATION_DISPLAY_DISABLED_NEXT_LINK', True)
 
 def do_autopaginate(parser, token):
     """
@@ -212,6 +217,11 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'paginator': paginator,
             'hashtag': hashtag,
             'is_paginated': paginator.count > paginator.per_page,
+            'display_page_links': DISPLAY_PAGE_LINKS,
+            'display_disabled_previous_link': DISPLAY_DISABLED_PREVIOUS_LINK,
+            'display_disabled_next_link': DISPLAY_DISABLED_NEXT_LINK,
+            'previous_link_decorator': PREVIOUS_LINK_DECORATOR,
+            'next_link_decorator': NEXT_LINK_DECORATOR,
         }
         if 'request' in context:
             getvars = context['request'].GET.copy()
