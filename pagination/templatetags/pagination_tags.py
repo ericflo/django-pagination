@@ -134,11 +134,17 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
         A dictionary of all of the **GET** parameters in the current request.
         This is useful to maintain certain types of state, even when requesting
         a different page.
-        """
+    
+    ``pagination_template``
+        A custom template to include in place of the default ``pagination.html`` 
+        contents.
+        
+    """
     try:
         paginator = context['paginator']
         page_obj = context['page_obj']
         page_range = paginator.page_range
+        pagination_template = context.get('pagination_template', 'pagination/default.html')
         # Calculate the record range in the current page for display.
         records = {'first': 1 + (page_obj.number - 1) * paginator.per_page}
         records['last'] = records['first'] + paginator.per_page - 1
@@ -222,6 +228,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'display_disabled_next_link': DISPLAY_DISABLED_NEXT_LINK,
             'previous_link_decorator': PREVIOUS_LINK_DECORATOR,
             'next_link_decorator': NEXT_LINK_DECORATOR,
+            'pagination_template': pagination_template,
         }
         if 'request' in context:
             getvars = context['request'].GET.copy()
