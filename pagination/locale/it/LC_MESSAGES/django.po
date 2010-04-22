@@ -17,8 +17,8 @@ msgstr ""
 
 #: templates/pagination/default.html:6 templates/pagination/default.html:9
 msgid "previous"
-msgstr "successive"
+msgstr "precedenti"
 
 #: templates/pagination/default.html:30 templates/pagination/default.html:33
 msgid "next"
-msgstr "precedenti"
+msgstr "successive"
