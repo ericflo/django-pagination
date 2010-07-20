@@ -214,6 +214,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'is_paginated': paginator.count > paginator.per_page,
         }
         if 'request' in context:
+            to_return['request'] = context['request']
             getvars = context['request'].GET.copy()
             if 'page' in getvars:
                 del getvars['page']
@@ -222,7 +223,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             else:
                 to_return['getvars'] = ''
         return to_return
-    except KeyError, AttributeError:
+    except (KeyError, AttributeError):
         return {}
 
 register.inclusion_tag('pagination/pagination.html', takes_context=True)(
