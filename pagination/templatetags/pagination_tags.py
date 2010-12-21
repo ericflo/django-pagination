@@ -19,38 +19,47 @@ INVALID_PAGE_RAISES_404 = getattr(settings,
 def do_autopaginate(parser, token):
     """
     Splits the arguments to the autopaginate tag and formats them correctly.
+
+    Syntax is:
+
+        autopaginate SOMETHING [PAGINATE_BY] [ORPHANS] [as NAME]
     """
-    split = token.split_contents()
-    as_index = None
+    i = iter(token.split_contents())
+    paginate_by = None
+    queryset_var = None
     context_var = None
-    for i, bit in enumerate(split):
-        if bit == 'as':
-            as_index = i
-            break
-    if as_index is not None:
-        try:
-            context_var = split[as_index + 1]
-        except IndexError:
-            raise template.TemplateSyntaxError("Context variable assignment " +
-                "must take the form of {%% %r object.example_set.all ... as " +
-                "context_var_name %%}" % split[0])
-        del split[as_index:as_index + 2]
-    if len(split) == 2:
-        return AutoPaginateNode(split[1])
-    elif len(split) == 3:
-        return AutoPaginateNode(split[1], paginate_by=split[2], 
-            context_var=context_var)
-    elif len(split) == 4:
-        try:
-            orphans = int(split[3])
-        except ValueError:
-            raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
-                % split[3])
-        return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans,
-            context_var=context_var)
-    else:
-        raise template.TemplateSyntaxError('%r tag takes one required ' +
-            'argument and one optional argument' % split[0])
+    orphans = None
+    word = None
+    try:
+        word = i.next()
+        assert word == "autopaginate"
+        queryset_var = i.next()
+        word = i.next()
+        if word != "as":
+            paginate_by = word
+            try:
+                paginate_by = int(paginate_by)
+            except ValueError:
+                pass
+            word = i.next()
+        if word != "as":
+            orphans = word
+            try:
+                orphans = int(orphans)
+            except ValueError:
+                pass
+            word = i.next()
+        assert word == "as"
+        context_var = i.next()
+    except StopIteration:
+        pass
+    if queryset_var is None:
+        raise template.TemplateSyntaxError(
+            "Invalid syntax. Proper usage of this tag is: "
+            "{%% autopaginate QUERYSET [PAGINATE_BY] [ORPHANS]"
+            " [as CONTEXT_VAR_NAME] %%}"
+        )
+    return AutoPaginateNode(queryset_var, paginate_by, orphans, context_var)
 
 class AutoPaginateNode(template.Node):
     """
@@ -69,14 +78,21 @@ class AutoPaginateNode(template.Node):
         tag.  If you choose not to use *{% paginate %}*, make sure to display the
         list of available pages, or else the application may seem to be buggy.
     """
-    def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION,
-        orphans=DEFAULT_ORPHANS, context_var=None):
+    def __init__(self, queryset_var, paginate_by=None,
+        orphans=None, context_var=None):
+        if paginate_by is None:
+            paginate_by = DEFAULT_PAGINATION
+        if orphans is None:
+            orphans = DEFAULT_ORPHANS
         self.queryset_var = template.Variable(queryset_var)
         if isinstance(paginate_by, int):
             self.paginate_by = paginate_by
         else:
             self.paginate_by = template.Variable(paginate_by)
-        self.orphans = orphans
+        if isinstance(orphans, int):
+            self.orphans = orphans
+        else:
+            self.orphans = template.Variable(orphans)
         self.context_var = context_var
 
     def render(self, context):
@@ -86,7 +102,11 @@ class AutoPaginateNode(template.Node):
             paginate_by = self.paginate_by
         else:
             paginate_by = self.paginate_by.resolve(context)
-        paginator = Paginator(value, paginate_by, self.orphans)
+        if isinstance(self.orphans, int):
+            orphans = self.orphans
+        else:
+            orphans = self.orphans.resolve(context)
+        paginator = Paginator(value, paginate_by, orphans)
         try:
             page_obj = paginator.page(context['request'].page)
         except InvalidPage:
