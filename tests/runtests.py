@@ -9,7 +9,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from django.test.simple import run_tests
 
 if __name__ == "__main__":
-    failures = run_tests(['pagination',], verbosity=9)
+    failures = run_tests(['pagination', ], verbosity=1)
     if failures:
         sys.exit(failures)
     # Reset the DJANGO_SETTINGS_MODULE to what it was before running tests.

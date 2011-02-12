@@ -25,134 +25,109 @@
 >>> paginate({'paginator': p, 'page_obj': p.page(1)})['pages']
 [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
->>> p = Paginator(range(19), 2)
+
+# on start
+# moving the window from 1 ... to end
+# window size = 2, margin = 2
+# [1] 2 3 4 5 ... 15, 16
+# 1 [2] 3 4 5 ... 15, 16
+# 1 2 [3] 4 5 ... 15, 16
+# 1 2 3 [4] 5 6 ... 15, 16
+# 1 2 3 4 [5] 6 7 ... 15, 16
+# 1 2 3 4 5 [6] 7 8 ... 15, 16
+# 1 2 ... 5 6 [7] 8 9 ... 15, 16
+
+# window = 2 -> show 5 pages
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(1)}, 2, '', 2)['pages']
+[1, 2, 3, 4, 5, None, 15, 16]
+
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(2)}, 2, '', 2)['pages']
+[1, 2, 3, 4, 5, None, 15, 16]
+
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(3)}, 2, '', 2)['pages']
+[1, 2, 3, 4, 5, None, 15, 16]
+
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(4)}, 2, '', 2)['pages']
+[1, 2, 3, 4, 5, 6, None, 15, 16]
+
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(5)}, 2, '', 2)['pages']
+[1, 2, 3, 4, 5, 6, 7, None, 15, 16]
+
+# in the middle
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(7)}, 2, '', 2)['pages']
+[1, 2, None, 5, 6, 7, 8, 9, None, 15, 16]
+
+# on end
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(16)}, 2, '', 2)['pages']
+[1, 2, None, 12, 13, 14, 15, 16]
+
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(13)}, 2, '', 2)['pages']
+[1, 2, None, 11, 12, 13, 14, 15, 16]
+
+
+>>> p = Paginator(range(0), 2)
 >>> paginate({'paginator': p, 'page_obj': p.page(1)})['pages']
-[1, 2, 3, 4, None, 7, 8, 9, 10]
+[1]
 
->>> p = Paginator(range(21), 2)
->>> paginate({'paginator': p, 'page_obj': p.page(1)})['pages']
-[1, 2, 3, 4, None, 8, 9, 10, 11]
 
-# Testing orphans
->>> p = Paginator(range(5), 2, 1)
->>> paginate({'paginator': p, 'page_obj': p.page(1)})['pages']
-[1, 2]
 
->>> p = Paginator(range(21), 2, 1)
->>> pg = paginate({'paginator': p, 'page_obj': p.page(1)})
->>> pg['pages']
-[1, 2, 3, 4, None, 7, 8, 9, 10]
->>> pg['records']['first']
-1
->>> pg['records']['last']
-2
+# no margin
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(3)}, 2, '', 0)['pages']
+[1, 2, 3, 4, 5, None]
 
->>> p = Paginator(range(21), 2, 1)
->>> pg = paginate({'paginator': p, 'page_obj': p.page(10)})
->>> pg['pages']
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
->>> pg['records']['first']
-19
->>> pg['records']['last']
-21
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(5)}, 2, '', 0)['pages']
+[None, 3, 4, 5, 6, 7, None]
 
->>> t = Template("{% load pagination_tags %}{% autopaginate var 2 %}{% paginate %}")
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(16)}, 2, '', 0)['pages']
+[None, 12, 13, 14, 15, 16]
 
->>> from django.http import HttpRequest as DjangoHttpRequest
->>> class HttpRequest(DjangoHttpRequest):
-...     page = 1
 
->>> t.render(Context({'var': range(21), 'request': HttpRequest()}))
-u'\\n\\n<div class="pagination">...
->>>
->>> t = Template("{% load pagination_tags %}{% autopaginate var %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'request': HttpRequest()}))
-u'\\n\\n<div class="pagination">...
->>> t = Template("{% load pagination_tags %}{% autopaginate var 20 %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'request': HttpRequest()}))
-u'\\n\\n<div class="pagination">...
->>> t = Template("{% load pagination_tags %}{% autopaginate var by %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'by': 20, 'request': HttpRequest()}))
-u'\\n\\n<div class="pagination">...
->>> t = Template("{% load pagination_tags %}{% autopaginate var by as foo %}{{ foo }}")
->>> t.render(Context({'var': range(21), 'by': 20, 'request': HttpRequest()}))
-u'[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]'
->>>
+# special
+# zero window, zero margin
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(1)}, 0, '', 0)['pages']
+[1, None]
 
-# Testing InfinitePaginator
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(2)}, 0, '', 0)['pages']
+[None, 2, None]
 
->>> from paginator import InfinitePaginator
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(3)}, 0, '', 0)['pages']
+[None, 3, None]
 
->>> InfinitePaginator
-<class 'pagination.paginator.InfinitePaginator'>
->>> p = InfinitePaginator(range(20), 2, link_template='/bacon/page/%d')
->>> p.validate_number(2)
-2
->>> p.orphans
-0
->>> p3 = p.page(3)
->>> p3
-<Page 3>
->>> p3.end_index()
-6
->>> p3.has_next()
-True
->>> p3.has_previous()
-True
->>> p.page(10).has_next()
-False
->>> p.page(1).has_previous()
-False
->>> p3.next_link()
-'/bacon/page/4'
->>> p3.previous_link()
-'/bacon/page/2'
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(10)}, 0, '', 0)['pages']
+[None, 10, None]
 
-# Testing FinitePaginator
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(14)}, 0, '', 0)['pages']
+[None, 14, None]
 
->>> from paginator import FinitePaginator
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(15)}, 0, '', 0)['pages']
+[None, 15, None]
 
->>> FinitePaginator
-<class 'pagination.paginator.FinitePaginator'>
->>> p = FinitePaginator(range(20), 2, offset=10, link_template='/bacon/page/%d')
->>> p.validate_number(2)
-2
->>> p.orphans
-0
->>> p3 = p.page(3)
->>> p3
-<Page 3>
->>> p3.start_index()
-10
->>> p3.end_index()
-6
->>> p3.has_next()
-True
->>> p3.has_previous()
-True
->>> p3.next_link()
-'/bacon/page/4'
->>> p3.previous_link()
-'/bacon/page/2'
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(16)}, 0, '', 0)['pages']
+[None, 16]
 
->>> p = FinitePaginator(range(20), 20, offset=10, link_template='/bacon/page/%d')
->>> p2 = p.page(2)
->>> p2
-<Page 2>
->>> p2.has_next()
-False
->>> p3.has_previous()
-True
->>> p2.next_link()
+>>> p = Paginator(range(31), 2)
+>>> paginate({'paginator': p, 'page_obj': p.page(5)}, 0, '', 1)['pages']
+[1, None, 5, None, 16]
 
->>> p2.previous_link()
-'/bacon/page/1'
 
->>> from pagination.middleware import PaginationMiddleware
->>> from django.core.handlers.wsgi import WSGIRequest
->>> from StringIO import StringIO
->>> middleware = PaginationMiddleware()
->>> request = WSGIRequest({'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': 'multipart', 'wsgi.input': StringIO()})
->>> middleware.process_request(request)
->>> request.upload_handlers.append('asdf')
+
+
 """
