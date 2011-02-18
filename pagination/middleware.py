@@ -1,10 +1,12 @@
+from django.conf import settings
+
 def get_page(self):
     """
     A function which will be monkeypatched onto the request to get the current
     integer representing the current page.
     """
     try:
-        return int(self.REQUEST['page'])
+        return int(self.REQUEST[getattr(settings, "PAGINATION_QUERY_VAR", 'page')])
     except (KeyError, ValueError, TypeError):
         return 1
 
