@@ -7,6 +7,8 @@ from django import template
 from django.http import Http404
 from django.core.paginator import Paginator, InvalidPage
 from django.conf import settings
+from django.template.loader import select_template
+from django.template import Context
 
 register = template.Library()
 
@@ -103,7 +105,47 @@ class AutoPaginateNode(template.Node):
         context['paginator'] = paginator
         context['page_obj'] = page_obj
         return u''
+        
 
+class PaginateNode(template.Node):
+
+    def __init__(self, template=None):
+        self.template = template
+        
+    def render(self, context):
+        template_list = ['pagination/pagination.html']
+        to_return = paginate(context)
+        
+        if self.template:
+            template_list.insert(0, self.template)
+            
+        t = select_template(template_list)
+        if not t: 
+            return None
+        context = Context(to_return)
+        return t.render(context)
+        
+
+def do_paginate(parser, token):
+    """
+    {% paginate [using] [template] %}
+    
+    {% paginate %}
+    {% paginate using paginations/custom_pagination.html %}
+    """
+    argv = token.contents.split()
+    argc = len(argv)
+    
+    if argc > 3:
+        raise template.TemplateSyntaxError, "Tag %s takes at most 2 argument." % argv[0]
+    
+    if argc == 1:
+        return PaginateNode()
+    if argc == 3 and argv[1] == 'using':
+        return PaginateNode(template=argv[2])
+        
+    raise template.TemplateSyntaxError, "Tag %s is invalid. Please check the syntax" % argv[0]
+    
 
 def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
     """
@@ -226,6 +268,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
     except (KeyError, AttributeError):
         return {}
 
-register.inclusion_tag('pagination/pagination.html', takes_context=True)(
-    paginate)
+#register.inclusion_tag('pagination/pagination.html', takes_context=True)(
+#    paginate)
+register.tag('paginate', do_paginate)
 register.tag('autopaginate', do_autopaginate)
