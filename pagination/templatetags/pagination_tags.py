@@ -16,6 +16,11 @@ DEFAULT_WINDOW = getattr(settings, 'PAGINATION_DEFAULT_WINDOW', 4)
 DEFAULT_ORPHANS = getattr(settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
 INVALID_PAGE_RAISES_404 = getattr(settings,
     'PAGINATION_INVALID_PAGE_RAISES_404', False)
+DISPLAY_PAGE_LINKS = getattr(settings, 'PAGINATION_DISPLAY_PAGE_LINKS', True)
+PREVIOUS_LINK_DECORATOR = getattr(settings, 'PAGINATION_PREVIOUS_LINK_DECORATOR', "&lsaquo;&lsaquo; ")
+NEXT_LINK_DECORATOR = getattr(settings, 'PAGINATION_NEXT_LINK_DECORATOR', " &rsaquo;&rsaquo;")
+DISPLAY_DISABLED_PREVIOUS_LINK = getattr(settings, 'PAGINATION_DISPLAY_DISABLED_PREVIOUS_LINK', False)
+DISPLAY_DISABLED_NEXT_LINK = getattr(settings, 'PAGINATION_DISPLAY_DISABLED_NEXT_LINK', False)
 
 def do_autopaginate(parser, token):
     """
@@ -143,12 +148,18 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
         A dictionary of all of the **GET** parameters in the current request.
         This is useful to maintain certain types of state, even when requesting
         a different page.
-        """
+    
+    ``pagination_template``
+        A custom template to include in place of the default ``pagination.html`` 
+        contents.
+        
+    """
     try:
         paginator = context['paginator']
         page_obj = context['page_obj']
         page_suffix = context.get('page_suffix', '')
         page_range = paginator.page_range
+        pagination_template = context.get('pagination_template', 'pagination/default.html')
         # Calculate the record range in the current page for display.
         records = {'first': 1 + (page_obj.number - 1) * paginator.per_page}
         records['last'] = records['first'] + paginator.per_page - 1
@@ -228,6 +239,12 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'hashtag': hashtag,
             'is_paginated': paginator.count > paginator.per_page,
             'page_suffix': page_suffix,
+            'display_page_links': DISPLAY_PAGE_LINKS,
+            'display_disabled_previous_link': DISPLAY_DISABLED_PREVIOUS_LINK,
+            'display_disabled_next_link': DISPLAY_DISABLED_NEXT_LINK,
+            'previous_link_decorator': PREVIOUS_LINK_DECORATOR,
+            'next_link_decorator': NEXT_LINK_DECORATOR,
+            'pagination_template': pagination_template,
         }
         if 'request' in context:
             getvars = context['request'].GET.copy()
