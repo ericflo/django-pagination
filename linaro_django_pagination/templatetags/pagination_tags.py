@@ -13,6 +13,7 @@ register = template.Library()
 
 DEFAULT_PAGINATION = getattr(settings, 'PAGINATION_DEFAULT_PAGINATION', 20)
 DEFAULT_WINDOW = getattr(settings, 'PAGINATION_DEFAULT_WINDOW', 4)
+DEFAULT_MARGIN = getattr(settings, 'PAGINATION_DEFAULT_MARGIN', DEFAULT_WINDOW)
 DEFAULT_ORPHANS = getattr(settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
 INVALID_PAGE_RAISES_404 = getattr(settings,
     'PAGINATION_INVALID_PAGE_RAISES_404', False)
@@ -22,13 +23,14 @@ NEXT_LINK_DECORATOR = getattr(settings, 'PAGINATION_NEXT_LINK_DECORATOR', " &rsa
 DISPLAY_DISABLED_PREVIOUS_LINK = getattr(settings, 'PAGINATION_DISPLAY_DISABLED_PREVIOUS_LINK', False)
 DISPLAY_DISABLED_NEXT_LINK = getattr(settings, 'PAGINATION_DISPLAY_DISABLED_NEXT_LINK', False)
 
+
 def do_autopaginate(parser, token):
     """
     Splits the arguments to the autopaginate tag and formats them correctly.
 
     Syntax is:
 
-        autopaginate SOMETHING [PAGINATE_BY] [ORPHANS] [as NAME]
+        autopaginate QUERYSET [PAGINATE_BY] [ORPHANS] [as NAME]
     """
     # Check whether there are any other autopaginations are later in this template
     expr = lambda obj: (obj.token_type == TOKEN_BLOCK and \
@@ -144,7 +146,7 @@ class AutoPaginateNode(template.Node):
         return u''
 
 
-def paginate(context, window=DEFAULT_WINDOW):
+def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
     """
     Renders the ``pagination/pagination.html`` template, resulting in a
     Digg-like display of the available pages, given the current page.  If there
@@ -170,10 +172,24 @@ def paginate(context, window=DEFAULT_WINDOW):
         a different page.
     
     ``pagination_template``
-        A custom template to include in place of the default ``pagination.html`` 
+        A custom template to include in place of the default ``pagination/default.html`` 
         contents.
         
-    """
+    Argument ``window`` is number to pages before/after current page. If window
+    exceeds pagination border (1 and end), window is moved to left or right.
+
+    Argument ``margin``` is number of pages on start/end of pagination. 
+    Example:
+        window=2, margin=1, current=6     1 ... 4 5 [6] 7 8 ... 11 
+        window=2, margin=0, current=1     [1] 2 3 4 5 ...
+        window=2, margin=0, current=5     ... 3 4 [5] 6 7 ...
+        window=2, margin=0, current=11     ... 7 8 9 10 [11]
+        """
+
+    if window < 0:
+        raise ValueError('Parameter "window" cannot be less than zero')
+    if margin < 0:
+        raise ValueError('Parameter "margin" cannot be less than zero')
     try:
         paginator = context['paginator']
         page_obj = context['page_obj']
@@ -185,85 +201,59 @@ def paginate(context, window=DEFAULT_WINDOW):
         records['last'] = records['first'] + paginator.per_page - 1
         if records['last'] + paginator.orphans >= paginator.count:
             records['last'] = paginator.count
-        # First and last are simply the first *n* pages and the last *n* pages,
-        # where *n* is the current window size.
-        first = set(page_range[:window])
-        last = set(page_range[-window:])
-        # Now we look around our current page, making sure that we don't wrap
-        # around.
-        current_start = page_obj.number-1-window
-        if current_start < 0:
-            current_start = 0
-        current_end = page_obj.number-1+window
-        if current_end < 0:
-            current_end = 0
-        current = set(page_range[current_start:current_end])
-        pages = []
-        # If there's no overlap between the first set of pages and the current
-        # set of pages, then there's a possible need for elusion.
-        if len(first.intersection(current)) == 0:
-            first_list = list(first)
-            first_list.sort()
-            second_list = list(current)
-            second_list.sort()
-            pages.extend(first_list)
-            diff = second_list[0] - first_list[-1]
-            # If there is a gap of two, between the last page of the first
-            # set and the first page of the current set, then we're missing a
-            # page.
-            if diff == 2:
-                pages.append(second_list[0] - 1)
-            # If the difference is just one, then there's nothing to be done,
-            # as the pages need no elusion and are correct.
-            elif diff == 1:
-                pass
-            # Otherwise, there's a bigger gap which needs to be signaled for
-            # elusion, by pushing a None value to the page list.
-            else:
-                pages.append(None)
-            pages.extend(second_list)
+
+        # figure window
+        window_start = page_obj.number - window - 1
+        window_end = page_obj.number + window
+
+        # solve if window exceeded page range
+        if window_start < 0:
+            window_end = window_end - window_start
+            window_start = 0
+        if window_end > paginator.num_pages:
+            window_start = window_start - (window_end - paginator.num_pages)
+            window_end = paginator.num_pages
+        pages = page_range[window_start:window_end]
+
+        # figure margin and add elipses
+        if margin > 0:
+            # figure margin
+            tmp_pages = set(pages)
+            tmp_pages = tmp_pages.union(page_range[:margin])
+            tmp_pages = tmp_pages.union(page_range[-margin:])
+            tmp_pages = list(tmp_pages)
+            tmp_pages.sort()
+            pages = []
+            pages.append(tmp_pages[0])
+            for i in range(1, len(tmp_pages)):
+                # figure gap size => add elipses or fill in gap
+                gap = tmp_pages[i] - tmp_pages[i - 1]
+                if gap >= 3:
+                    pages.append(None)
+                elif gap == 2:
+                    pages.append(tmp_pages[i] - 1)
+                pages.append(tmp_pages[i])
         else:
-            unioned = list(first.union(current))
-            unioned.sort()
-            pages.extend(unioned)
-        # If there's no overlap between the current set of pages and the last
-        # set of pages, then there's a possible need for elusion.
-        if len(current.intersection(last)) == 0:
-            second_list = list(last)
-            second_list.sort()
-            diff = second_list[0] - pages[-1]
-            # If there is a gap of two, between the last page of the current
-            # set and the first page of the last set, then we're missing a 
-            # page.
-            if diff == 2:
-                pages.append(second_list[0] - 1)
-            # If the difference is just one, then there's nothing to be done,
-            # as the pages need no elusion and are correct.
-            elif diff == 1:
-                pass
-            # Otherwise, there's a bigger gap which needs to be signaled for
-            # elusion, by pushing a None value to the page list.
-            else:
+            if pages[0] != 1:
+                pages.insert(0, None)
+            if pages[-1] != paginator.num_pages:
                 pages.append(None)
-            pages.extend(second_list)
-        else:
-            differenced = list(last.difference(current))
-            differenced.sort()
-            pages.extend(differenced)
+
         to_return = {
             'MEDIA_URL': settings.MEDIA_URL,
             'STATIC_URL': getattr(settings, "STATIC_URL", None),
-            'pages': pages,
-            'page_obj': page_obj,
-            'paginator': paginator,
-            'is_paginated': paginator.count > paginator.per_page,
-            'page_suffix': page_suffix,
-            'display_page_links': DISPLAY_PAGE_LINKS,
-            'display_disabled_previous_link': DISPLAY_DISABLED_PREVIOUS_LINK,
             'display_disabled_next_link': DISPLAY_DISABLED_NEXT_LINK,
-            'previous_link_decorator': PREVIOUS_LINK_DECORATOR,
+            'display_disabled_previous_link': DISPLAY_DISABLED_PREVIOUS_LINK,
+            'display_page_links': DISPLAY_PAGE_LINKS,
+            'is_paginated': paginator.count > paginator.per_page,
             'next_link_decorator': NEXT_LINK_DECORATOR,
+            'page_obj': page_obj,
+            'page_suffix': page_suffix,
+            'pages': pages,
             'pagination_template': pagination_template,
+            'paginator': paginator,
+            'previous_link_decorator': PREVIOUS_LINK_DECORATOR,
+            'records': records,
         }
         if 'request' in context:
             getvars = context['request'].GET.copy()
