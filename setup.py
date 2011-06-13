@@ -16,8 +16,15 @@ setup(
     author='Zygmunt Krynicki',
     author_email='zygmunt.krynicki@linaro.org',
     url='https://github.com/zyga/django-pagination',
+    test_suite='linaro_django_pagination.test_project.tests.run_tests',
     license='BSD',
     packages=find_packages(),
+    install_requires=[
+        'django >= 1.2',
+    ],
+    tests_require=[
+        'django-testproject >= 0.1',
+    ],
     include_package_data=True,
     zip_safe=False,
 )

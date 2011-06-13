@@ -1,6 +1,0 @@
-DATABASE_ENGINE = 'sqlite3'
-ROOT_URLCONF = ''
-SITE_ID = 1
-INSTALLED_APPS = (
-    'linaro_django_pagination',
-)
