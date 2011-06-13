@@ -1,10 +1,10 @@
-Installing the latest development version of django-pagination
+Installing the latest development version of linaro-linaro-django-pagination
 ---------------------------------------------------------------
 
 To install, first check out the latest version of the application from
 subversion:
 
-    svn co http://django-pagination.googlecode.com/svn/trunk django-pagination
+    svn co http://linaro-django-pagination.googlecode.com/svn/trunk linaro-django-pagination
 
 Now, link the inner ``pagination`` project to your Python path:
 
@@ -27,14 +27,14 @@ following command:
 
     sudo python setup.py install
 
-Once that's done, you should be able to begin using django-pagination at will.
+Once that's done, you should be able to begin using linaro-django-pagination at will.
 
 Installing via setuptools
 -------------------------
 
 If you have setuptools_ installed, you can simply run the following command
-to install django-pagination:
+to install linaro-django-pagination:
 
-    sudo easy_install django-pagination
+    sudo easy_install linaro-django-pagination
 
 .. _setuptools: http://peak.telecommunity.com/DevCenter/setuptools

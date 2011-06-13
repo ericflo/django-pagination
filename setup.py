@@ -1,13 +1,24 @@
+#!/usr/bin/env python
 from setuptools import setup, find_packages
 
 version = '1.0.7.1'
 
 LONG_DESCRIPTION = """
-How to use django-pagination
-----------------------------
 
-``django-pagination`` allows for easy Digg-style pagination without modifying
-your views.
+About the fork
+--------------
+
+This project is a fork of apparently dead "django-pagination" project
+originally written by 'Eric Florenzano'. It is maintained by the Linaro
+Validation/Infrastructure team. Latest releases can be found on launchpad and
+pypi.
+
+
+How to use linaro-django-pagination
+-----------------------------------
+
+``linaro-django-pagination`` allows for easy Digg-style pagination without
+modifying your views.
 
 There are really 5 steps to setting it up with your projects (not including 
 installation, which is covered in INSTALL.txt in this same directory.)
@@ -17,7 +28,7 @@ installation, which is covered in INSTALL.txt in this same directory.)
    
        INSTALLED_APPS = (
            # ...
-           'pagination',
+           'linaro_django_pagination',
        )
 
 
@@ -26,7 +37,7 @@ installation, which is covered in INSTALL.txt in this same directory.)
    
        MIDDLEWARE_CLASSES = (
            # ...
-           'pagination.middleware.PaginationMiddleware',
+           'linaro_django_pagination.middleware.PaginationMiddleware',
        )
 
 3. If it's not already added in your setup, add the request context processor.
@@ -76,11 +87,11 @@ a way to navigate between the different pages--all without touching your views.
 
 
 Optional Settings
-------------------
+-----------------
 
-In django-pagination, there are no required settings.  There are, however, a
-small set of optional settings useful for changing the default behavior of the
-pagination tags.  Here's an overview:
+In linaro-django-pagination, there are no required settings.  There are,
+however, a small set of optional settings useful for changing the default
+behavior of the pagination tags.  Here's an overview:
 
 ``PAGINATION_DEFAULT_PAGINATION``
     The default amount of items to show on a page if no number is specified.
@@ -102,9 +113,9 @@ pagination tags.  Here's an overview:
 """
 
 setup(
-    name='django-pagination',
+    name='linaro-django-pagination',
     version=version,
-    description="django-pagination",
+    description="linaro-django-pagination",
     long_description=LONG_DESCRIPTION,
     classifiers=[
         "Programming Language :: Python",
@@ -114,8 +125,8 @@ setup(
     ],
     keywords='pagination,django',
     author='Eric Florenzano',
-    author_email='floguy@gmail.com',
-    url='http://django-pagination.googlecode.com/',
+    author_email='zygmunt.krynicki@linaro.org',
+    url='http://launchpad.net/linaro-django-pagination/',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,

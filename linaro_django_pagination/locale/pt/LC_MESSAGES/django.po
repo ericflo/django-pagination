@@ -1,4 +1,4 @@
-# django-pagination Portuguese translation.
+# linaro-django-pagination Portuguese translation.
 # Copyright (C) 2008, Alcides Fonseca
 # http://alcidesfonseca.com
 # This file is distributed under the WTFPL

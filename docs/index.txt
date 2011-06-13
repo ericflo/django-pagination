@@ -1,5 +1,5 @@
 #################
-django-pagination
+linaro-django-pagination
 #################
 
 Django-pagination is a set of utilities for creating robust pagination tools 
