@@ -15,7 +15,7 @@ setup(
     keywords='pagination,django',
     author='Zygmunt Krynicki',
     author_email='zygmunt.krynicki@linaro.org',
-    url='http://launchpad.net/linaro-django-pagination/',
+    url='https://github.com/zyga/django-pagination',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,
