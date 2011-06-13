@@ -252,7 +252,7 @@ def paginate(context, window=DEFAULT_WINDOW):
             pages.extend(differenced)
         to_return = {
             'MEDIA_URL': settings.MEDIA_URL,
-            'STATIC_URL': settings.STATIC_URL,
+            'STATIC_URL': getattr(settings, "STATIC_URL", None),
             'pages': pages,
             'page_obj': page_obj,
             'paginator': paginator,
