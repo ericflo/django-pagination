@@ -251,6 +251,8 @@ def paginate(context, window=DEFAULT_WINDOW):
             differenced.sort()
             pages.extend(differenced)
         to_return = {
+            'MEDIA_URL': settings.MEDIA_URL,
+            'STATIC_URL': settings.STATIC_URL,
             'pages': pages,
             'page_obj': page_obj,
             'paginator': paginator,
