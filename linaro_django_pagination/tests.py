@@ -32,6 +32,10 @@
 >>> paginate({'paginator': p, 'page_obj': p.page(1)})['pages']
 [1, 2, 3, 4, None, 7, 8, 9, 10]
 
+>>> p = Paginator(range(21), 2, 1)
+>>> paginate({'paginator': p, 'page_obj': p.page(1)})['pages']
+[1, 2, 3, 4, None, 7, 8, 9, 10]
+
 >>> t = Template("{% load pagination_tags %}{% autopaginate var 2 %}{% paginate %}")
 
 >>> from django.http import HttpRequest as DjangoHttpRequest

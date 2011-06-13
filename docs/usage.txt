@@ -69,6 +69,19 @@ installation, which is covered in INSTALL.txt in this same directory.)
 That's it!  You have now paginated ``object_list`` and given users of the site
 a way to navigate between the different pages--all without touching your views.
 
+Custom pagination templates
+---------------------------
+
+In order to override the default pagination template, declare a context variable 
+named ``pagination_template`` set to the template name::
+
+    {% with 'pagination/blog/post.html' as pagination_template %}
+        {% autopaginate posts pagesize %}
+        {% paginate %}
+    {% endwith %}
+
+The default pagination template is contained in the ``pagination/default.html`` 
+file inside the distribution.
 
 A Note About Uploads
 --------------------
@@ -104,3 +117,20 @@ pagination tags.  Here's an overview:
     Determines whether an invalid page raises an ``Http404`` or just sets the
     ``invalid_page`` context variable.  ``True`` does the former and ``False``
     does the latter.
+
+``DISPLAY_PAGE_LINKS``
+    If set to ``False``, links for single pages will not be displayed.
+
+``PREVIOUS_LINK_DECORATOR``
+    An HTML prefix for the previous page link; the default value is ``&lsaquo;&lsaquo; ``.
+
+``NEXT_LINK_DECORATOR``
+    An HTML postfix for the next page link; the default value is `` &rsaquo;&rsaquo;``.
+
+``DISPLAY_DISABLED_PREVIOUS_LINK``
+    If set to ``False``, the previous page link will not be displayed if there's 
+    no previous page.
+
+``DISPLAY_DISABLED_NEXT_LINK``
+    If set to ``False``, the next page link will not be displayed if there's no 
+    next page.
