@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
 
-version = '1.0.7.1'
-
 setup(
     name='linaro-django-pagination',
     version=version,
@@ -15,7 +13,7 @@ setup(
         "Environment :: Web Environment",
     ],
     keywords='pagination,django',
-    author='Eric Florenzano',
+    author='Zygmunt Krynicki',
     author_email='zygmunt.krynicki@linaro.org',
     url='http://launchpad.net/linaro-django-pagination/',
     license='BSD',
