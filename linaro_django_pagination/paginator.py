@@ -1,5 +1,6 @@
 from django.core.paginator import Paginator, Page, PageNotAnInteger, EmptyPage
 
+
 class InfinitePaginator(Paginator):
     """
     Paginator designed for cases when it's not important to know how many total
@@ -81,8 +82,7 @@ class InfinitePage(Page):
         Checks for one more item than last on this page.
         """
         try:
-            next_item = self.paginator.object_list[
-                self.number * self.paginator.per_page]
+            self.paginator.object_list[self.number * self.paginator.per_page]
         except IndexError:
             return False
         return True
@@ -106,6 +106,7 @@ class InfinitePage(Page):
         if self.has_previous():
             return self.paginator.link_template % (self.number - 1)
         return None
+
 
 class FinitePaginator(InfinitePaginator):
     """
@@ -150,6 +151,7 @@ class FinitePaginator(InfinitePaginator):
         page_items = self.object_list[:self.per_page]
         return FinitePage(page_items, number, self)
 
+
 class FinitePage(InfinitePage):
 
     def has_next(self):
@@ -157,7 +159,7 @@ class FinitePage(InfinitePage):
         Checks for one more item than last on this page.
         """
         try:
-            next_item = self.paginator.object_list[self.paginator.per_page]
+            self.paginator.object_list[self.paginator.per_page]
         except IndexError:
             return False
         return True

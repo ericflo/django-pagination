@@ -272,7 +272,7 @@ def paginate(context, window=DEFAULT_WINDOW):
             else:
                 to_return['getvars'] = ''
         return to_return
-    except KeyError, AttributeError:
+    except (KeyError, AttributeError):
         return {}
 
 
