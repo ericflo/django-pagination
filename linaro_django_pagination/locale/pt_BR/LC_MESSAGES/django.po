@@ -1,5 +1,5 @@
 # django-pagination in Portuguese (Brazil).
-# Copyright (C) 2011, Tiago Samaha Cordeiro
+# Copyright (c) 2011, Tiago Samaha Cordeiro
 # This file is distributed under the same license as the django-pagination package.
 # Tiago Samaha Cordeiro <tiagosamaha@gmail.com>, 2011.
 #

@@ -1,5 +1,5 @@
 # django-pagination Spanish translation
-# Copyright (C) 2010, Miguel Araujo
+# Copyright (c) 2010, Miguel Araujo
 # This file is distributed under the same license as the django-pagination package.
 # Miguel Araujo <miguel.araujo.perez@gmail.com>, 2010
 #

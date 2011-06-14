@@ -1,5 +1,5 @@
 # django-pagination Italian translation
-# Copyright (C) 2010 Fabio Corneti <info@corneti.com>
+# Copyright (c) 2010 Fabio Corneti <info@corneti.com>
 # This file is distributed under the same license as the django-pagination package.
 # Fabio Corneti <info@corneti.com>, 2010.
 #

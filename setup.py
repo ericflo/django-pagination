@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Copyright (c) 2008, Eric Florenzano
-# Copyright (C) 2010, 2011 Linaro Limited
+# Copyright (c) 2010, 2011 Linaro Limited
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
