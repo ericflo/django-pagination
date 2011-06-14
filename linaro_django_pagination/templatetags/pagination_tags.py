@@ -1,11 +1,11 @@
 # Copyright (c) 2008, Eric Florenzano
 # Copyright (c) 2010, 2011 Linaro Limited
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
-# 
+#
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
 #     * Redistributions in binary form must reproduce the above
@@ -15,7 +15,7 @@
 #     * Neither the name of the author nor the names of other
 #       contributors may be used to endorse or promote products derived
 #       from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -93,24 +93,23 @@ def do_autopaginate(parser, token):
         raise TemplateSyntaxError(
             "Invalid syntax. Proper usage of this tag is: "
             "{%% autopaginate QUERYSET [PAGINATE_BY] [ORPHANS]"
-            " [as CONTEXT_VAR_NAME] %%}"
-        )
+            " [as CONTEXT_VAR_NAME] %%}")
     return AutoPaginateNode(queryset_var, multiple_paginations, paginate_by, orphans, context_var)
 
 
 class AutoPaginateNode(Node):
     """
     Emits the required objects to allow for Digg-style pagination.
-    
+
     First, it looks in the current context for the variable specified, and using
-    that object, it emits a simple ``Paginator`` and the current page object 
+    that object, it emits a simple ``Paginator`` and the current page object
     into the context names ``paginator`` and ``page_obj``, respectively.
-    
+
     It will then replace the variable specified with only the objects for the
     current page.
-    
+
     .. note::
-        
+
         It is recommended to use *{% paginate %}* after using the autopaginate
         tag.  If you choose not to use *{% paginate %}*, make sure to display the
         list of available pages, or else the application may seem to be buggy.
@@ -138,7 +137,7 @@ class AutoPaginateNode(Node):
             page_suffix = '_%s' % self.queryset_var
         else:
             page_suffix = ''
-        
+
         key = self.queryset_var.var
         value = self.queryset_var.resolve(context)
         if isinstance(self.paginate_by, int):
@@ -179,23 +178,23 @@ class PaginateNode(Node):
 
     def __init__(self, template=None):
         self.template = template
-        
+
     def render(self, context):
         template_list = ['pagination/pagination.html']
         to_return = paginate(context)
         if self.template:
             template_list.insert(0, self.template)
         t = select_template(template_list)
-        if not t: 
+        if not t:
             return None
         context = Context(to_return)
         return t.render(context)
-        
+
 
 def do_paginate(parser, token):
     """
     {% paginate [using] [template] %}
-    
+
     {% paginate %}
     {% paginate using paginations/custom_pagination.html %}
     """
@@ -216,31 +215,31 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
     Digg-like display of the available pages, given the current page.  If there
     are too many pages to be displayed before and after the current page, then
     elipses will be used to indicate the undisplayed gap between page numbers.
-    
+
     Requires one argument, ``context``, which should be a dictionary-like data
     structure and must contain the following keys:
-    
+
     ``paginator``
         A ``Paginator`` or ``QuerySetPaginator`` object.
-    
+
     ``page_obj``
-        This should be the result of calling the page method on the 
+        This should be the result of calling the page method on the
         aforementioned ``Paginator`` or ``QuerySetPaginator`` object, given
         the current page.
-    
+
     This same ``context`` dictionary-like data structure may also include:
-    
+
     ``getvars``
         A dictionary of all of the **GET** parameters in the current request.
         This is useful to maintain certain types of state, even when requesting
         a different page.
-        
+
     Argument ``window`` is number to pages before/after current page. If window
     exceeds pagination border (1 and end), window is moved to left or right.
 
-    Argument ``margin``` is number of pages on start/end of pagination. 
+    Argument ``margin``` is number of pages on start/end of pagination.
     Example:
-        window=2, margin=1, current=6     1 ... 4 5 [6] 7 8 ... 11 
+        window=2, margin=1, current=6     1 ... 4 5 [6] 7 8 ... 11
         window=2, margin=0, current=1     [1] 2 3 4 5 ...
         window=2, margin=0, current=5     ... 3 4 [5] 6 7 ...
         window=2, margin=0, current=11     ... 7 8 9 10 [11]

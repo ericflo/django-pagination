@@ -1,11 +1,11 @@
 # Copyright (c) 2008, Eric Florenzano
 # Copyright (c) 2010, 2011 Linaro Limited
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
-# 
+#
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
 #     * Redistributions in binary form must reproduce the above
@@ -15,7 +15,7 @@
 #     * Neither the name of the author nor the names of other
 #       contributors may be used to endorse or promote products derived
 #       from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -35,8 +35,8 @@ from django.core.paginator import Paginator, Page, PageNotAnInteger, EmptyPage
 class InfinitePaginator(Paginator):
     """
     Paginator designed for cases when it's not important to know how many total
-    pages.  This is useful for any object_list that has no count() method or can
-    be used to improve performance for MySQL by removing counts.
+    pages.  This is useful for any object_list that has no count() method or
+    can be used to improve performance for MySQL by removing counts.
 
     The orphans parameter has been removed for simplicity and there's a link
     template string for creating the links to the next and previous pages.
@@ -44,7 +44,7 @@ class InfinitePaginator(Paginator):
 
     def __init__(self, object_list, per_page, allow_empty_first_page=True,
         link_template='/page/%d/'):
-        orphans = 0 # no orphans
+        orphans = 0  # no orphans
         super(InfinitePaginator, self).__init__(object_list, per_page, orphans,
             allow_empty_first_page)
         # no count or num pages
