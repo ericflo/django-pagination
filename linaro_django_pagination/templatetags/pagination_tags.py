@@ -29,12 +29,19 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from django import template
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
-from django.template import TOKEN_BLOCK
+from django.template import (
+    Context,
+    Library,
+    Node,
+    TOKEN_BLOCK,
+    TemplateSyntaxError,
+    Variable,
+)
+from django.template.loader import select_template
 
 # TODO, import this normally later on
 from linaro_django_pagination.settings import *
@@ -83,7 +90,7 @@ def do_autopaginate(parser, token):
     except StopIteration:
         pass
     if queryset_var is None:
-        raise template.TemplateSyntaxError(
+        raise TemplateSyntaxError(
             "Invalid syntax. Proper usage of this tag is: "
             "{%% autopaginate QUERYSET [PAGINATE_BY] [ORPHANS]"
             " [as CONTEXT_VAR_NAME] %%}"
@@ -91,7 +98,7 @@ def do_autopaginate(parser, token):
     return AutoPaginateNode(queryset_var, multiple_paginations, paginate_by, orphans, context_var)
 
 
-class AutoPaginateNode(template.Node):
+class AutoPaginateNode(Node):
     """
     Emits the required objects to allow for Digg-style pagination.
     
@@ -114,15 +121,15 @@ class AutoPaginateNode(template.Node):
             paginate_by = DEFAULT_PAGINATION
         if orphans is None:
             orphans = DEFAULT_ORPHANS
-        self.queryset_var = template.Variable(queryset_var)
+        self.queryset_var = Variable(queryset_var)
         if isinstance(paginate_by, int):
             self.paginate_by = paginate_by
         else:
-            self.paginate_by = template.Variable(paginate_by)
+            self.paginate_by = Variable(paginate_by)
         if isinstance(orphans, int):
             self.orphans = orphans
         else:
-            self.orphans = template.Variable(orphans)
+            self.orphans = Variable(orphans)
         self.context_var = context_var
         self.multiple_paginations = multiple_paginations
 
@@ -168,6 +175,41 @@ class AutoPaginateNode(template.Node):
         return u''
 
 
+class PaginateNode(Node):
+
+    def __init__(self, template=None):
+        self.template = template
+        
+    def render(self, context):
+        template_list = ['pagination/pagination.html']
+        to_return = paginate(context)
+        if self.template:
+            template_list.insert(0, self.template)
+        t = select_template(template_list)
+        if not t: 
+            return None
+        context = Context(to_return)
+        return t.render(context)
+        
+
+def do_paginate(parser, token):
+    """
+    {% paginate [using] [template] %}
+    
+    {% paginate %}
+    {% paginate using paginations/custom_pagination.html %}
+    """
+    argv = token.contents.split()
+    argc = len(argv)
+    if argc > 3:
+        raise TemplateSyntaxError("Tag %s takes at most 2 argument." % argv[0])
+    if argc == 1:
+        return PaginateNode()
+    if argc == 3 and argv[1] == 'using':
+        return PaginateNode(template=argv[2])
+    raise TemplateSyntaxError("Tag %s is invalid. Please check the syntax" % argv[0])
+
+
 def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
     """
     Renders the ``pagination/pagination.html`` template, resulting in a
@@ -192,10 +234,6 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
         A dictionary of all of the **GET** parameters in the current request.
         This is useful to maintain certain types of state, even when requesting
         a different page.
-    
-    ``pagination_template``
-        A custom template to include in place of the default ``pagination/default.html`` 
-        contents.
         
     Argument ``window`` is number to pages before/after current page. If window
     exceeds pagination border (1 and end), window is moved to left or right.
@@ -217,7 +255,6 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
         page_obj = context['page_obj']
         page_suffix = context.get('page_suffix', '')
         page_range = paginator.page_range
-        pagination_template = context.get('pagination_template', 'pagination/default.html')
         # Calculate the record range in the current page for display.
         records = {'first': 1 + (page_obj.number - 1) * paginator.per_page}
         records['last'] = records['first'] + paginator.per_page - 1
@@ -272,7 +309,6 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
             'page_obj': page_obj,
             'page_suffix': page_suffix,
             'pages': pages,
-            'pagination_template': pagination_template,
             'paginator': paginator,
             'previous_link_decorator': PREVIOUS_LINK_DECORATOR,
             'records': records,
@@ -290,7 +326,6 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
         return {}
 
 
-register = template.Library()
-register.inclusion_tag(
-    'pagination/pagination.html', takes_context=True)(paginate)
+register = Library()
+register.tag('paginate', do_paginate)
 register.tag('autopaginate', do_autopaginate)
