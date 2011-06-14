@@ -41,8 +41,8 @@ from django_testproject.settings import gen_settings
 locals().update(
     gen_settings(
         INSTALLED_APPS=[
-            'linaro_django_pagination',
             'example',
+            'linaro_django_pagination',
         ],
         MIDDLEWARE_CLASSES=[
             'linaro_django_pagination.middleware.PaginationMiddleware',
