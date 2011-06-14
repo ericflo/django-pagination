@@ -93,8 +93,8 @@ def do_autopaginate(parser, token):
     if queryset_var is None:
         raise TemplateSyntaxError(
             "Invalid syntax. Proper usage of this tag is: "
-            "{%% autopaginate QUERYSET [PAGINATE_BY] [ORPHANS]"
-            " [as CONTEXT_VAR_NAME] %%}")
+            "{% autopaginate QUERYSET [PAGINATE_BY] [ORPHANS]"
+            " [as CONTEXT_VAR_NAME] %}")
     return AutoPaginateNode(queryset_var, multiple_paginations, paginate_by, orphans, context_var)
 
 
