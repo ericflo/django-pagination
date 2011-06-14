@@ -144,7 +144,13 @@ class AutoPaginateNode(template.Node):
             orphans = self.orphans.resolve(context)
         paginator = Paginator(value, paginate_by, orphans)
         try:
-            page_obj = paginator.page(context['request'].page(page_suffix))
+            request = context['request']
+        except KeyError:
+            raise ImproperlyConfigured(
+                "You need to enable 'django.core.context_processors.request'."
+                " See linaro-django-pagination/README file for TEMPLATE_CONTEXT_PROCESSORS details")
+        try:
+            page_obj = paginator.page(request.page(page_suffix))
         except InvalidPage:
             if INVALID_PAGE_RAISES_404:
                 raise Http404('Invalid page requested.  If DEBUG were set to ' +
