@@ -1,5 +1,6 @@
-include COPYING 
 include CONTRIBUTORS.txt
-recursive-include docs *
-recursive-include linaro_django_pagination/templates/pagination *.html
+include COPYING 
+include doc/conf.py
+recursive-include doc *.rst
 recursive-include linaro_django_pagination/locale *.po
+recursive-include linaro_django_pagination/templates/pagination *.html

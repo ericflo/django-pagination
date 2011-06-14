@@ -1,5 +1,10 @@
+.. _usage:
+
+Usage
+*****
+
 How to use linaro-django-pagination
-----------------------------
+===================================
 
 ``linaro-django-pagination`` allows for easy Digg-style pagination without modifying
 your views.
@@ -70,42 +75,44 @@ That's it!  You have now paginated ``object_list`` and given users of the site
 a way to navigate between the different pages--all without touching your views.
 
 Custom pagination templates
----------------------------
+===========================
 
-In order to override the default pagination template, declare a context variable 
-named ``pagination_template`` set to the template name::
+In order to override the default pagination template use the extended form of
+the ``paginate`` tag::
 
-    {% with 'pagination/blog/post.html' as pagination_template %}
-        {% autopaginate posts pagesize %}
-        {% paginate %}
-    {% endwith %}
+    {% autopaginate posts pagesize %}
+    {% paginate using "pagination/blog/post.html" %}
 
-The default pagination template is contained in the ``pagination/default.html`` 
-file inside the distribution.
+The default pagination template is contained in the
+``pagination/pagination.html`` file inside the distribution.
 
 A Note About Uploads
---------------------
+====================
 
-It is important, when using linaro-django-pagination in conjunction with file uploads,
-to be aware of when ``request.page`` is accessed.  As soon as ``request.page``
-is accessed, ``request.upload_handlers`` is frozen and cannot be altered in any
-way.  It's a good idea to access the ``page`` attribute on the request object 
-as late as possible in your views.
+It is important, when using linaro-django-pagination in conjunction with file
+uploads, to be aware of when ``request.page`` is accessed.  As soon as
+``request.page`` is accessed, ``request.upload_handlers`` is frozen and cannot
+be altered in any way.  It's a good idea to access the ``page`` attribute on
+the request object as late as possible in your views.
 
 
 Optional Settings
-------------------
+=================
 
-In linaro-django-pagination, there are no required settings.  There are, however, a
-small set of optional settings useful for changing the default behavior of the
-pagination tags.  Here's an overview:
+In linaro-django-pagination, there are no required settings.  There are,
+however, a small set of optional settings useful for changing the default
+behavior of the pagination tags.  Here's an overview:
 
 ``PAGINATION_DEFAULT_PAGINATION``
     The default amount of items to show on a page if no number is specified.
+    Defaults to 20
 
 ``PAGINATION_DEFAULT_WINDOW``
     The number of items to the left and to the right of the current page to
-    display (accounting for ellipses).
+    display (accounting for ellipses). Defaults to 4.
+
+``PAGINATION_DEFAULT_MARGIN``
+    FIXME: This needs to be documented.
 
 ``PAGINATION_DEFAULT_ORPHANS``
     The number of orphans allowed.  According to the Django documentation,
@@ -116,21 +123,21 @@ pagination tags.  Here's an overview:
 ``PAGINATION_INVALID_PAGE_RAISES_404``
     Determines whether an invalid page raises an ``Http404`` or just sets the
     ``invalid_page`` context variable.  ``True`` does the former and ``False``
-    does the latter.
+    does the latter. Defaults to False
 
-``DISPLAY_PAGE_LINKS``
-    If set to ``False``, links for single pages will not be displayed.
+``PAGINATION_DISPLAY_PAGE_LINKS``
+    If set to ``False``, links for single pages will not be displayed. Defaults to True.
 
-``PREVIOUS_LINK_DECORATOR``
-    An HTML prefix for the previous page link; the default value is ``&lsaquo;&lsaquo; ``.
+``PAGINATION_PREVIOUS_LINK_DECORATOR``
+    An HTML prefix for the previous page link; the default value is ``&lsaquo;&lsaquo;``.
 
-``NEXT_LINK_DECORATOR``
-    An HTML postfix for the next page link; the default value is `` &rsaquo;&rsaquo;``.
+``PAGINATION_NEXT_LINK_DECORATOR``
+    An HTML postfix for the next page link; the default value is ``&rsaquo;&rsaquo;``.
 
-``DISPLAY_DISABLED_PREVIOUS_LINK``
+``PAGINATION_DISPLAY_DISABLED_PREVIOUS_LINK``
     If set to ``False``, the previous page link will not be displayed if there's 
-    no previous page.
+    no previous page. Defaults to False.
 
-``DISPLAY_DISABLED_NEXT_LINK``
+``PAGINATION_DISPLAY_DISABLED_NEXT_LINK``
     If set to ``False``, the next page link will not be displayed if there's no 
-    next page.
+    next page. Defaults to False.
