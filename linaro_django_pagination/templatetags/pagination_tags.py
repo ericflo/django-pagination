@@ -42,6 +42,7 @@ from django.template import (
     Variable,
 )
 from django.template.loader import select_template
+from django.utils.text import unescape_string_literal
 
 # TODO, import this normally later on
 from linaro_django_pagination.settings import *
@@ -193,20 +194,26 @@ class PaginateNode(Node):
 
 def do_paginate(parser, token):
     """
-    {% paginate [using] [template] %}
+    Emits the pagination control for the most recent autopaginate list
 
-    {% paginate %}
-    {% paginate using paginations/custom_pagination.html %}
+    Syntax is:
+
+        paginate [using "TEMPLATE"]
+
+    Where TEMPLATE is a quoted template name. If missing the default template
+    is used (paginate/paginate.html).
     """
-    argv = token.contents.split()
+    argv = token.split_contents()
     argc = len(argv)
-    if argc > 3:
-        raise TemplateSyntaxError("Tag %s takes at most 2 argument." % argv[0])
     if argc == 1:
-        return PaginateNode()
-    if argc == 3 and argv[1] == 'using':
-        return PaginateNode(template=argv[2])
-    raise TemplateSyntaxError("Tag %s is invalid. Please check the syntax" % argv[0])
+        template = None
+    elif argc == 3 and argv[1] == 'using':
+        template = unescape_string_literal(argv[2])
+    else:
+        raise TemplateSyntaxError(
+            "Invalid syntax. Proper usage of this tag is: "
+            "{% paginate [using \"TEMPLATE\"] %}")
+    return PaginateNode(template)
 
 
 def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
