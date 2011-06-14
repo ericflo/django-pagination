@@ -10,7 +10,7 @@
 {% for item in first_item_list %}
 <p>{{item}}</p>
 {% endfor %}
-{% paginate using2 "pagination/custom_pagination.html" %}
+{% paginate using "pagination/custom_pagination.html" %}
 
 <p>Second list has {{ second_item_list|length}} items.</p>
 {% autopaginate second_item_list 5 %}
