@@ -32,12 +32,20 @@
 from setuptools import setup, find_packages
 
 
-version = "1.1"
+try:
+    import versiontools
+except ImportError:
+    print "This package requires python-versiontools to be configured"
+    print "See: http://packages.python.org/versiontools/installation.html"
+    raise
+
+
+import linaro_django_pagination
 
 
 setup(
     name='linaro-django-pagination',
-    version=version,
+    version=versiontools.format_version(linaro_django_pagination.__version__),
     author='Zygmunt Krynicki',
     author_email='zygmunt.krynicki@linaro.org',
     description="linaro-django-pagination",
@@ -62,6 +70,9 @@ setup(
     ],
     tests_require=[
         'django-testproject >= 0.1',
+    ],
+    setup_requires=[
+        'versiontools >= 1.2'
     ],
     include_package_data=True,
 )
