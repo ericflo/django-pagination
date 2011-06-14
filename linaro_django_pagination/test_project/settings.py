@@ -30,6 +30,11 @@
 import sys
 import os
 
+# Add this directory to path so that 'example' can be imported later
+# below. Without this the runner will fail when started via ``setup.py
+# test``
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 from django_testproject.settings import gen_settings
 
 
@@ -37,13 +42,15 @@ locals().update(
     gen_settings(
         INSTALLED_APPS=[
             'linaro_django_pagination',
+            'example',
         ],
         MIDDLEWARE_CLASSES=[
             'linaro_django_pagination.middleware.PaginationMiddleware',
         ],
+        TEMPLATE_CONTEXT_PROCESSORS=[
+            # Request processor needs to be enabled
+            'django.core.context_processors.request'
+        ],
         ROOT_URLCONF="linaro_django_pagination.test_project.urls"
     )
 )
-
-
-print "imported as ",__name__

@@ -28,11 +28,18 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from django.conf.urls.defaults import (
-    patterns, url, include, handler500, handler404)
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 
-# Empty patterns so that test project can be started and would work normally
-urlpatterns = patterns(
-    '', 
-    url('', include('example.urls')),
-)
+
+def list(request):
+    return render_to_response("example/list.html", {
+        'item_list': range(1000),
+    }, RequestContext(request))
+
+
+def complex_list(request):
+    return render_to_response("example/two_lists.html", {
+        'first_item_list': ["first list item %d" % item for item in range(1000)],
+        'second_item_list': ["second list item %d" % item for item in range(1000)],
+    }, RequestContext(request))
