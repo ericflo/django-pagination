@@ -201,7 +201,7 @@ def do_paginate(parser, token):
         paginate [using "TEMPLATE"]
 
     Where TEMPLATE is a quoted template name. If missing the default template
-    is used (paginate/paginate.html).
+    is used (paginate/pagination.html).
     """
     argv = token.split_contents()
     argc = len(argv)
