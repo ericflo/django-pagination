@@ -9,8 +9,8 @@ How to use linaro-django-pagination
 ``linaro-django-pagination`` allows for easy Digg-style pagination without modifying
 your views.
 
-There are really 5 steps to setting it up with your projects (not including 
-installation, which is covered in INSTALL.txt in this same directory.)
+There are really 5 steps to setting it up with your projects (not including
+installation, which is covered in :ref:`installation`.)
 
 1. List this application in the ``INSTALLED_APPS`` portion of your settings
    file.  Your settings file might look something like::
