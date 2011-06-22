@@ -86,6 +86,15 @@ the ``paginate`` tag::
 The default pagination template is contained in the
 ``pagination/pagination.html`` file inside the distribution.
 
+
+Multiple paginations per page
+=============================
+
+You can use autopaginate/paginate multiple times in the same template. The only
+requirement is to call autopaginate before calling paginate. That is, paginate
+acts on the most recent call to autopaginate.
+
+
 A Note About Uploads
 ====================
 
