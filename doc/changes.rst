@@ -1,7 +1,18 @@
 Version History
 ***************
 
+
+.. _version_2_0_2:
+
+Version 2.0.2
+=============
+
+This is an another micro release. There are no code changes (apart from
+setup.py). The only change is to make it pip-friendly by using new integration
+mode with versiontools.
+
 .. _version_2_0_1:
+
 
 Version 2.0.1
 =============

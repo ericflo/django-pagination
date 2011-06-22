@@ -5,7 +5,7 @@ Linaro Django Pagination Documentation
 .. automodule:: linaro_django_pagination
 
 .. seealso:: To get started quickly see :ref:`usage`
-.. seealso:: See what's new in :ref:`version_2_0_1`
+.. seealso:: See what's new in :ref:`version_2_0_2`
 
 Features
 ========
