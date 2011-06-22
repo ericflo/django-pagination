@@ -60,6 +60,10 @@ installation, which is covered in :ref:`installation`.)
    
    Note that this replaces ``object_list`` with the list for the current page, so
    you can iterate over the ``object_list`` like you normally would.
+
+   In general the full syntax is::
+
+        autopaginate QUERYSET [PAGINATE_BY] [ORPHANS] [as NAME]
    
 
 6. Now you want to display the current page and the available pages, so
@@ -67,7 +71,7 @@ installation, which is covered in :ref:`installation`.)
    
        {% paginate %}
    
-   This does not take any arguments, but does assume that you have already
+   This does not require any arguments, but does assume that you have already
    called autopaginate, so make sure to do so first.
 
 
@@ -77,14 +81,24 @@ a way to navigate between the different pages--all without touching your views.
 Custom pagination templates
 ===========================
 
-In order to override the default pagination template use the extended form of
-the ``paginate`` tag::
+By default the objects will be paginated using a helper template
+"pagination/pagination.html". You can change this with an argument to
+``paginate``.
+
+In general the full syntax is::
+
+        paginate [using "TEMPLATE"]
+
+For example, to paginate posts on a hypothetical blog page you could use
+something like this::
 
     {% autopaginate posts pagesize %}
     {% paginate using "pagination/blog/post.html" %}
 
 The default pagination template is contained in the
-``pagination/pagination.html`` file inside the distribution.
+``pagination/pagination.html`` file inside the distribution. You could extend
+it and only customize the parts you care about. Please inspect the template to
+see the blocks it defines that you could customize.
 
 
 Multiple paginations per page
