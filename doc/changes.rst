@@ -1,6 +1,25 @@
 Version History
 ***************
 
+.. _version_2_0_1:
+
+Version 2.0.1
+=============
+
+This is a micro release. There are no code changes so there is no need to
+upgrade. The only changes are to documentation and infrastructure files.
+
+The following changes are included:
+
+* Improve documentation for using custom pagination templates
+* Document multiple paginations per page
+* Use correct template name in do_paginate docstring
+* Provide correct link to installation instructions
+* Fix documentation referencing all project name
+* Ignore vim swap files
+* Add templates from the test project to MANIFEST.in
+
+
 .. _version_2_0:
 
 Version 2.0
