@@ -17,7 +17,7 @@ installation, which is covered in INSTALL.txt in this same directory.)
    
        INSTALLED_APPS = (
            # ...
-           'pagination',
+           'linaro_django_pagination',
        )
 
 
@@ -26,7 +26,7 @@ installation, which is covered in INSTALL.txt in this same directory.)
    
        MIDDLEWARE_CLASSES = (
            # ...
-           'pagination.middleware.PaginationMiddleware',
+           'linaro_django_pagination.middleware.PaginationMiddleware',
        )
 
 3. If it's not already added in your setup, add the request context processor.
