@@ -4,3 +4,4 @@ include doc/conf.py
 recursive-include doc *.rst
 recursive-include linaro_django_pagination/locale *.po
 recursive-include linaro_django_pagination/templates/pagination *.html
+recursive-include linaro_django_pagination/test_project/example/templates *.html
