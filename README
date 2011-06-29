@@ -11,6 +11,18 @@ Feel free to hop to #linaro on irc.freenode.net and ask either 'zyga' or
 'mwhudson' about this.
 
 
+About top-level package name change
+-----------------------------------
+The top level package name was changed from `pagination` to
+`linaro-django-pagination`. I did this to ensure that existing users of the
+original package could easily transition, on their own terms. Since both
+packages are co-installable you are free to check things out and see if the new
+pagination code works well for you or not.
+
+Also, since the implementation of the actual tags was rewritten I would not
+feel entirely confident that the new package is a drop-in replacement.
+
+
 Contributors
 ------------
 
