@@ -40,6 +40,7 @@ from django.template import (
     TOKEN_BLOCK,
     TemplateSyntaxError,
     Variable,
+    loader,
 )
 from django.template.loader import select_template
 from django.utils.text import unescape_string_literal
@@ -185,11 +186,9 @@ class PaginateNode(Node):
         to_return = paginate(context)
         if self.template:
             template_list.insert(0, self.template)
-        t = select_template(template_list)
-        if not t:
-            return None
-        context = Context(to_return)
-        return t.render(context)
+        return loader.render_to_string(template_list, to_return, 
+            context_instance = context)
+
 
 
 def do_paginate(parser, token):
