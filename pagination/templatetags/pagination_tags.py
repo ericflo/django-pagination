@@ -148,7 +148,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
         current_start = page_obj.number-1-window
         if current_start < 0:
             current_start = 0
-        current_end = page_obj.number-1+window
+        current_end = page_obj.number+window
         if current_end < 0:
             current_end = 0
         current = set(page_range[current_start:current_end])
