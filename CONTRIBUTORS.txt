@@ -7,4 +7,5 @@ ADDITIONAL CONTRIBUTORS include:
     * Martin Mahner
     * James Tauber
     * Jannis Leidel
+    * Alcides Fonseca
     * Ilya Polosukhin
