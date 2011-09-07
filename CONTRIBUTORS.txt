@@ -9,4 +9,5 @@ ADDITIONAL CONTRIBUTORS include:
     * Jannis Leidel
     * Alcides Fonseca
     * Leah Culver
+    * tzangms
     * Ilya Polosukhin
