@@ -2,6 +2,7 @@ django-pagination was started by Eric Florenzano in May 2008.
 
 The PRIMARY AUTHORS are (and/or have been):
     * Eric Florenzano
+    * Luke Hatcher (current maintainer)
 
 ADDITIONAL CONTRIBUTORS include:
     * Martin Mahner
