@@ -8,4 +8,5 @@ ADDITIONAL CONTRIBUTORS include:
     * James Tauber
     * Jannis Leidel
     * Alcides Fonseca
+    * Leah Culver
     * Ilya Polosukhin
