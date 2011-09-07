@@ -1,5 +1,9 @@
-Eric Florenzano <floguy@gmail.com>
-Martin Mahner <martin@mahner.org>
-James Tauber <jtauber@gmail.com>
+django-pagination was started by Eric Florenzano in May 2008.
 
-Ilya Polosukhin <ilblackdragon@gmail.com>
+The PRIMARY AUTHORS are (and/or have been):
+    * Eric Florenzano
+
+ADDITIONAL CONTRIBUTORS include:
+    * Martin Mahner
+    * James Tauber
+    * Ilya Polosukhin
