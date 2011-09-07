@@ -6,4 +6,5 @@ The PRIMARY AUTHORS are (and/or have been):
 ADDITIONAL CONTRIBUTORS include:
     * Martin Mahner
     * James Tauber
+    * Jannis Leidel
     * Ilya Polosukhin
