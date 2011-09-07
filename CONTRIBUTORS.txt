@@ -10,4 +10,5 @@ ADDITIONAL CONTRIBUTORS include:
     * Alcides Fonseca
     * Leah Culver
     * tzangms
+    * Daniel Mizyrycki
     * Ilya Polosukhin
