@@ -1,5 +1,6 @@
+============================
 How to use django-pagination
-----------------------------
+============================
 
 ``django-pagination`` allows for easy Digg-style pagination without modifying
 your views.
