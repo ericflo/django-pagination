@@ -7,6 +7,7 @@ from django import template
 from django.http import Http404
 from django.core.paginator import Paginator, InvalidPage
 from django.conf import settings
+from pagination.paginator import YipitInfinitePaginator
 
 register = template.Library()
 
@@ -52,6 +53,46 @@ def do_autopaginate(parser, token):
         raise template.TemplateSyntaxError('%r tag takes one required ' +
             'argument and one optional argument' % split[0])
 
+
+def no_count_paginate(parser, token):
+    """
+    Removes objecting counting MySQL queries by subclassing the django-pagination, InfinitePaginator. 
+    May be wiser to move this custom tag over to Yipit project. 
+    """
+    split = token.split_contents()
+    as_index = None
+    context_var = None
+    for i, bit in enumerate(split):
+        if bit == 'as':
+            as_index = i
+            break
+    if as_index is not None:
+        try:
+            context_var = split[as_index + 1]
+        except IndexError:
+            raise template.TemplateSyntaxError("Context variable assignment " +
+                "must take the form of {%% %r object.example_set.all ... as " +
+                "context_var_name %%}" % split[0])
+        del split[as_index:as_index + 2]
+    if len(split) == 2:
+        return AutoPaginateNode(split[1], paginator=YipitInfinitePaginator)
+    elif len(split) == 3:
+        return AutoPaginateNode(split[1], paginate_by=split[2], 
+            context_var=context_var, paginator=YipitInfinitePaginator)
+    elif len(split) == 4:
+        try:
+            orphans = int(split[3])
+        except ValueError:
+            raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
+                % split[3])
+        return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans,
+            context_var=context_var, paginator=YipitInfinitePaginator)
+    else:
+        raise template.TemplateSyntaxError('%r tag takes one required ' +
+            'argument and one optional argument' % split[0])
+
+
+
 class AutoPaginateNode(template.Node):
     """
     Emits the required objects to allow for Digg-style pagination.
@@ -68,9 +109,13 @@ class AutoPaginateNode(template.Node):
         It is recommended to use *{% paginate %}* after using the autopaginate
         tag.  If you choose not to use *{% paginate %}*, make sure to display the
         list of available pages, or else the application may seem to be buggy.
+        
+        The paginator attribute has been added for Yipit customization to allow for 
+        a custom paginator (YipitInfinitePaginator). The default is the django core Paginator
+        object, which is what AutoPaginateNode used pre-forking.
     """
     def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION,
-        orphans=DEFAULT_ORPHANS, context_var=None):
+        orphans=DEFAULT_ORPHANS, context_var=None, paginator=Paginator):
         self.queryset_var = template.Variable(queryset_var)
         if isinstance(paginate_by, int):
             self.paginate_by = paginate_by
@@ -78,6 +123,7 @@ class AutoPaginateNode(template.Node):
             self.paginate_by = template.Variable(paginate_by)
         self.orphans = orphans
         self.context_var = context_var
+        self.paginator = paginator
 
     def render(self, context):
         key = self.queryset_var.var
@@ -86,7 +132,7 @@ class AutoPaginateNode(template.Node):
             paginate_by = self.paginate_by
         else:
             paginate_by = self.paginate_by.resolve(context)
-        paginator = Paginator(value, paginate_by, self.orphans)
+        paginator = self.paginator(value, paginate_by)
         try:
             page_obj = paginator.page(context['request'].page)
         except InvalidPage:
@@ -225,6 +271,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
     except KeyError, AttributeError:
         return {}
 
-register.inclusion_tag('pagination/pagination.html', takes_context=True)(
+register.inclusion_tag('pagination/yipit_pagination.html', takes_context=True)(
     paginate)
 register.tag('autopaginate', do_autopaginate)
+register.tag('countfree_paginate', no_count_paginate)
