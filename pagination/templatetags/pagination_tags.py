@@ -214,6 +214,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'is_paginated': paginator.count > paginator.per_page,
         }
         if 'request' in context:
+            to_return['request'] = context['request']
             getvars = context['request'].GET.copy()
             if 'page' in getvars:
                 del getvars['page']
