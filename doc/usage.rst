@@ -61,6 +61,10 @@ installation, which is covered in :ref:`installation`.)
    Note that this replaces ``object_list`` with the list for the current page, so
    you can iterate over the ``object_list`` like you normally would.
 
+   If you are using template ``{% block %}`` tags, the autopaginate tag must
+   exist in the same ``{% block %}`` where you access the paginated
+   ``object_list``.
+
    In general the full syntax is::
 
         autopaginate QUERYSET [PAGINATE_BY] [ORPHANS] [as NAME]
