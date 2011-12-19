@@ -112,58 +112,24 @@ class InfinitePage(Page):
         return None
 
 
-class YipitInfinitePaginator(InfinitePaginator):
-
-    def page(self, number):
-        """
-        Returns a Page object for the given 1-based page number. Subclasses InfinitePaginator
-        to remove MySQL count query for paginated lists
-        """
-        number = self.validate_number(number)
-        bottom = (number - 1) * self.per_page
-        top = bottom + self.per_page
-        page_items = self.object_list[bottom:top]
-        # check moved from validate_number
-        if not page_items:
-            if number == 1 and self.allow_empty_first_page:
-                pass
-            else:
-                raise EmptyPage('That page contains no results')
-        return YipitInfinitePage(page_items, number, self)
+class CachedCountPaginator(Paginator):
+    """
+    Nearly Identical to the core Django Paginator with the exception that it uses model cache counts.
+    Saves big MySQL Count queries. Object_list must be a model queryset.
+    """
 
     def _get_count(self):
-        """
-        Returns the total number of objects, across all pages. Hack here returns 100k
-        items in order to avoid costly Count MySQL query
-        """
-        return 100000
+        "Returns the total number of objects, across all pages."
+        if self._count is None:
+            try:
+                self._count = self.object_list.get_cached_count()
+            except (AttributeError, TypeError):
+                # AttributeError if object_list has no count() method.
+                # TypeError if object_list.count() requires arguments
+                # (i.e. is of type list).
+                self._count = len(self.object_list)
+        return self._count
     count = property(_get_count)
-
-    def _get_num_pages(self):
-        """
-        Returns the total number of pages. Hardcoded for same reason as _get_count()
-        """
-        
-        return 1000
-    num_pages = property(_get_num_pages)
-
-    def _get_page_range(self):
-        """
-        Returns a 1-based range of pages for iterating through within
-        a template for loop. Hardcoded for same reason as _get_count()
-        """
-        
-        return range(1000)
-    page_range = property(_get_page_range)
-
-
-class YipitInfinitePage(InfinitePage):
-    
-    def has_next(self):
-        """
-        Checks for one more item than last on this page.
-        """
-        return False
 
 
 class FinitePaginator(InfinitePaginator):

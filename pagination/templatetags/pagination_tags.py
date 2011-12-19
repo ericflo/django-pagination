@@ -7,7 +7,7 @@ from django import template
 from django.http import Http404
 from django.core.paginator import Paginator, InvalidPage
 from django.conf import settings
-from pagination.paginator import YipitInfinitePaginator
+from pagination.paginator import CachedCountPaginator
 
 register = template.Library()
 
@@ -17,80 +17,56 @@ DEFAULT_ORPHANS = getattr(settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
 INVALID_PAGE_RAISES_404 = getattr(settings,
     'PAGINATION_INVALID_PAGE_RAISES_404', False)
 
-def do_autopaginate(parser, token):
-    """
-    Splits the arguments to the autopaginate tag and formats them correctly.
-    """
-    split = token.split_contents()
-    as_index = None
-    context_var = None
-    for i, bit in enumerate(split):
-        if bit == 'as':
-            as_index = i
-            break
-    if as_index is not None:
-        try:
-            context_var = split[as_index + 1]
-        except IndexError:
-            raise template.TemplateSyntaxError("Context variable assignment " +
-                "must take the form of {%% %r object.example_set.all ... as " +
-                "context_var_name %%}" % split[0])
-        del split[as_index:as_index + 2]
-    if len(split) == 2:
-        return AutoPaginateNode(split[1])
-    elif len(split) == 3:
-        return AutoPaginateNode(split[1], paginate_by=split[2], 
-            context_var=context_var)
-    elif len(split) == 4:
-        try:
-            orphans = int(split[3])
-        except ValueError:
-            raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
-                % split[3])
-        return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans,
-            context_var=context_var)
-    else:
-        raise template.TemplateSyntaxError('%r tag takes one required ' +
-            'argument and one optional argument' % split[0])
+# def do_autopaginate(parser, token, PaginateNode=None):
+#     """
+#     Splits the arguments to the autopaginate tag and formats them correctly.
+#     """
+#     PaginateNode = AutoPaginateNode if not PaginateNode else PaginateNode
+#     split = token.split_contents()
+#     as_index = None
+#     context_var = None
+#     cache_counts = None
+#     for i, bit in enumerate(split):
+#         if bit == 'as':
+#             as_index = i
+#             continue
+#         if bit == 'cache_counts':
+#             cache_counts = i
+#             continue
+#     if as_index is not None:
+#         try:
+#             context_var = split[as_index + 1]
+#         except IndexError:
+#             raise template.TemplateSyntaxError("Context variable assignment " +
+#                 "must take the form of {%% %r object.example_set.all ... as " +
+#                 "context_var_name %%}" % split[0])
+#         del split[as_index:as_index + 2]
+#     if cache_counts is not None:
+#         del split[cache_counts:cache_counts + 1]
+#         PaginateNode = CachedAutoPaginateNode
+#     if len(split) == 2:
+#         return PaginateNode(split[1])
+#     elif len(split) == 3:
+#         return PaginateNode(split[1], paginate_by=split[2], 
+#             context_var=context_var)
+#     elif len(split) == 4:
+#         try:
+#             orphans = int(split[3])
+#         except ValueError:
+#             raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
+#                 % split[3])
+#         return PaginateNode(split[1], paginate_by=split[2], orphans=orphans,
+#             context_var=context_var)
+#     else:
+#         raise template.TemplateSyntaxError('%r tag takes one required ' +
+#             'argument and one optional argument' % split[0])
 
 
-def no_count_paginate(parser, token):
-    """
-    Removes objecting counting MySQL queries by subclassing the django-pagination, InfinitePaginator. 
-    May be wiser to move this custom tag over to Yipit project. 
-    """
-    split = token.split_contents()
-    as_index = None
-    context_var = None
-    for i, bit in enumerate(split):
-        if bit == 'as':
-            as_index = i
-            break
-    if as_index is not None:
-        try:
-            context_var = split[as_index + 1]
-        except IndexError:
-            raise template.TemplateSyntaxError("Context variable assignment " +
-                "must take the form of {%% %r object.example_set.all ... as " +
-                "context_var_name %%}" % split[0])
-        del split[as_index:as_index + 2]
-    if len(split) == 2:
-        return AutoPaginateNode(split[1], paginator=YipitInfinitePaginator)
-    elif len(split) == 3:
-        return AutoPaginateNode(split[1], paginate_by=split[2], 
-            context_var=context_var, paginator=YipitInfinitePaginator)
-    elif len(split) == 4:
-        try:
-            orphans = int(split[3])
-        except ValueError:
-            raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
-                % split[3])
-        return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans,
-            context_var=context_var, paginator=YipitInfinitePaginator)
-    else:
-        raise template.TemplateSyntaxError('%r tag takes one required ' +
-            'argument and one optional argument' % split[0])
-
+# def cached_count_paginate(parser, token):
+#     """
+#     Caches Queryset counts to improve the performance of the built-in Django Paginator
+#     """
+#     return do_autopaginate(parser, token, PaginateNode=CachedAutoPaginateNode)
 
 
 class AutoPaginateNode(template.Node):
@@ -149,6 +125,59 @@ class AutoPaginateNode(template.Node):
         context['paginator'] = paginator
         context['page_obj'] = page_obj
         return u''
+
+
+class CachedAutoPaginateNode(AutoPaginateNode):
+
+    def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION,
+        orphans=DEFAULT_ORPHANS, context_var=None, paginator=CachedCountPaginator):
+        
+        super(CachedAutoPaginateNode, self).__init__(queryset_var, paginate_by=paginate_by,
+            orphans=orphans, context_var=context_var, paginator=paginator)
+
+
+def do_autopaginate(parser, token, PaginateNode=AutoPaginateNode):
+    """
+    Splits the arguments to the autopaginate tag and formats them correctly.
+    """
+    split = token.split_contents()
+    as_index = None
+    context_var = None
+    cache_counts = None
+    for i, bit in enumerate(split):
+        if bit == 'as':
+            as_index = i
+            continue
+        if bit == 'cache_counts':
+            cache_counts = i
+            continue
+    if as_index is not None:
+        try:
+            context_var = split[as_index + 1]
+        except IndexError:
+            raise template.TemplateSyntaxError("Context variable assignment " +
+                "must take the form of {%% %r object.example_set.all ... as " +
+                "context_var_name %%}" % split[0])
+        del split[as_index:as_index + 2]
+    if cache_counts is not None:
+        del split[cache_counts:cache_counts + 1]
+        PaginateNode = CachedAutoPaginateNode
+    if len(split) == 2:
+        return PaginateNode(split[1])
+    elif len(split) == 3:
+        return PaginateNode(split[1], paginate_by=split[2], 
+            context_var=context_var)
+    elif len(split) == 4:
+        try:
+            orphans = int(split[3])
+        except ValueError:
+            raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
+                % split[3])
+        return PaginateNode(split[1], paginate_by=split[2], orphans=orphans,
+            context_var=context_var)
+    else:
+        raise template.TemplateSyntaxError('%r tag takes one required ' +
+            'argument and one optional argument' % split[0])
 
 
 def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
@@ -274,4 +303,4 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
 register.inclusion_tag('pagination/yipit_pagination.html', takes_context=True)(
     paginate)
 register.tag('autopaginate', do_autopaginate)
-register.tag('countfree_paginate', no_count_paginate)
+# register.tag('cachedpaginate', cached_count_paginate)
