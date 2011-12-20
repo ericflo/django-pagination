@@ -301,7 +301,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
         return {}
 
 
-def seo_paginate(context, window=DEFAULT_WINDOW, hashtag=''):
+def tailless_paginate(context, window=DEFAULT_WINDOW, hashtag=''):
     try:
         paginator = context['paginator']
         page_obj = context['page_obj']
@@ -398,7 +398,7 @@ def seo_paginate(context, window=DEFAULT_WINDOW, hashtag=''):
 
 register.inclusion_tag('pagination/yipit_pagination.html', takes_context=True)(
     paginate)
-register.inclusion_tag('pagination/seo_pagination.html', takes_context=True)(
-    seo_paginate)
+register.inclusion_tag('pagination/tailless_pagination.html', takes_context=True)(
+    tailless_paginate)
 register.tag('autopaginate', do_autopaginate)
 # register.tag('cachedpaginate', cached_count_paginate)
