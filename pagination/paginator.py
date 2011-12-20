@@ -114,7 +114,7 @@ class InfinitePage(Page):
 
 class CachedCountPaginator(Paginator):
     """
-    Nearly Identical to the core Django Paginator with the exception that it uses model cache counts.
+    Nearly Identical to the core Django Paginator with the exception that it uses queryset cache counts.
     Saves big MySQL Count queries. Object_list must be a model queryset.
     """
 

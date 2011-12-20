@@ -300,7 +300,105 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
     except KeyError, AttributeError:
         return {}
 
+
+def seo_paginate(context, window=DEFAULT_WINDOW, hashtag=''):
+    try:
+        paginator = context['paginator']
+        page_obj = context['page_obj']
+        page_range = paginator.page_range
+        # Calculate the record range in the current page for display.
+        records = {'first': 1 + (page_obj.number - 1) * paginator.per_page}
+        records['last'] = records['first'] + paginator.per_page - 1
+        if records['last'] + paginator.orphans >= paginator.count:
+            records['last'] = paginator.count
+
+        middle = page_obj.number
+        length = len(page_range)
+        
+        # If the current page is too close to the beginning or end, let us
+        # pretend that the current page is at least 'window' length away
+        if middle < window:
+            middle = window 
+        if middle > length - window:
+            middle = length - window
+
+        # Now we look around our current page, making sure that we don't wrap
+        # around.
+        current_start = middle-1-window
+        
+        #Increment current_start
+        current_start += 1
+        
+        if current_start < 0:
+            current_start = 0
+        current_end = middle-1+window
+        if current_end < 0:
+            current_end = 0
+
+        pages = []
+        
+        if (current_end > length - 2):
+            current_end = length
+
+        current = set(page_range[current_start:current_end])
+        first = set(page_range[0:2])
+        
+        # If there's no overlap between the first set of pages and the current
+        # set of pages, then there's a possible need for elusion.
+        if len(first.intersection(current)) == 0:
+            first_list = list(first)
+            first_list.sort()
+            second_list = list(current)
+            second_list.sort()
+            pages.extend(first_list)
+            diff = second_list[0] - first_list[-1]
+            # If there is a gap of two, between the last page of the first
+            # set and the first page of the current set, then we're missing a
+            # page.
+            if diff == 2:
+                pages.append(second_list[0] - 1)
+            # If the difference is just one, then there's nothing to be done,
+            # as the pages need no elusion and are correct.
+            elif diff == 1:
+                pass
+            # Otherwise, there's a bigger gap which needs to be signaled for
+            # elusion, by pushing a None value to the page list.
+            else:
+                pages.append(None)
+            pages.extend(second_list)
+        else:
+            unioned = list(first.union(current))
+            unioned.sort()
+            pages.extend(unioned)
+        
+        if (current_end < length):
+            pages.append(None)
+
+        to_return = {
+            'MEDIA_URL': settings.MEDIA_URL,
+            'pages': pages,
+            'records': records,
+            'page_obj': page_obj,
+            'paginator': paginator,
+            'hashtag': hashtag,
+            'is_paginated': paginator.count > paginator.per_page,
+        }
+        if 'request' in context:
+            getvars = context['request'].GET.copy()
+            if 'page' in getvars:
+                del getvars['page']
+            if len(getvars.keys()) > 0:
+                to_return['getvars'] = "&%s" % getvars.urlencode()
+            else:
+                to_return['getvars'] = ''
+        return to_return
+    except KeyError, AttributeError:
+        return {}
+
+
 register.inclusion_tag('pagination/yipit_pagination.html', takes_context=True)(
     paginate)
+register.inclusion_tag('pagination/seo_pagination.html', takes_context=True)(
+    seo_paginate)
 register.tag('autopaginate', do_autopaginate)
 # register.tag('cachedpaginate', cached_count_paginate)
