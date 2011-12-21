@@ -46,7 +46,7 @@ class InfinitePaginator(Paginator):
                 pass
             else:
                 raise EmptyPage('That page contains no results')
-        return YipitInfinitePage(page_items, number, self)
+        return InfinitePage(page_items, number, self)
 
     def _get_count(self):
         """
