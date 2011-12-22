@@ -87,7 +87,7 @@ In django-pagination, there are no required settings.  There are, however, a
 small set of optional settings useful for changing the default behavior of the
 pagination tags.  Here's an overview:
 
-``PAGINATION_DEFAULT_PAGINATION``
+``PAGINATION_DEFAULT_TOTAL``
     The default amount of items to show on a page if no number is specified.
 
 ``PAGINATION_DEFAULT_WINDOW``
