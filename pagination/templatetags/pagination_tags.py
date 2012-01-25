@@ -217,6 +217,10 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             getvars = context['request'].GET.copy()
             if 'page' in getvars:
                 del getvars['page']
+            # Useful in some cases, e.g. _pjax
+            for var in getvars.keys():
+                if var.startswith('_'):
+                    del getvars[var]
             if len(getvars.keys()) > 0:
                 to_return['getvars'] = "&%s" % getvars.urlencode()
             else:
