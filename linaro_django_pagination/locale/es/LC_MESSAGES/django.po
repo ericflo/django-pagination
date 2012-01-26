@@ -1,14 +1,14 @@
-# django-pagination Spanish translation
+# Spanish translation of django-pagination
 # Copyright (c) 2010, Miguel Araujo
 # This file is distributed under the same license as the django-pagination package.
 # Miguel Araujo <miguel.araujo.perez@gmail.com>, 2010
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: linaro-django-pagination master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-09-16 16:32+0200\n"
-"PO-Revision-Date: 2010-09-16 16:38+0200\n"
+"PO-Revision-Date: 2012-01-26 13:24+0100\n"
 "Last-Translator: Miguel Araujo <miguel.araujo.perez@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"

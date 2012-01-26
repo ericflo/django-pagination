@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: linaro-django-pagination master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-24 00:41-0700\n"
-"PO-Revision-Date: 2008-10-19 10:19+0200\n"
+"PO-Revision-Date: 2012-01-26 11:26+0100\n"
 "Last-Translator: Alcides Fonseca <me@alcidesfonseca.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
