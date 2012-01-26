@@ -1,15 +1,14 @@
-# django-pagination in Portuguese (Brazil).
+# Portuguese (Brazil) translation of django-pagination
 # Copyright (c) 2011, Tiago Samaha Cordeiro
 # This file is distributed under the same license as the django-pagination package.
 # Tiago Samaha Cordeiro <tiagosamaha@gmail.com>, 2011.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.0\n"
+"Project-Id-Version: linaro-django-pagination master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-01-16 22:06-0200\n"
-"PO-Revision-Date: 2011-01-16 22:15-3\n"
+"PO-Revision-Date: 2012-01-26 13:28+0100\n"
 "Last-Translator: Tiago Samaha Cordeiro <tiagosamaha@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: Portuguese Brazil\n"
