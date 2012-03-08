@@ -73,7 +73,32 @@ class InfinitePaginator(Paginator):
         raise NotImplementedError
     page_range = property(_get_page_range)
 
+class FakeInfinitePaginator(InfinitePaginator):
+    """
+    Paginator designed for cases when it's not important to know how many total
+    pages.  This is useful for any object_list that has no count() method or can
+    be used to improve performance for MySQL by removing counts.
 
+    The orphans parameter has been removed for simplicity and there's a link
+    template string for creating the links to the next and previous pages.
+    """
+
+    def _get_count(self):
+        """
+        Returns the total number of objects, across all pages.
+        """
+
+        return 10000
+    count = property(_get_count)
+
+    def _get_num_pages(self):
+        """
+        Returns the total number of pages.
+        """
+
+        return 100
+    num_pages = property(_get_num_pages)
+    
 class InfinitePage(Page):
 
     def __repr__(self):
