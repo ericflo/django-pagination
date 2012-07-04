@@ -222,6 +222,8 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
                 to_return['getvars'] = "&%s" % getvars.urlencode()
             else:
                 to_return['getvars'] = ''
+        if 'link_prefix' in context:
+            to_return['link_prefix'] = context['link_prefix']
         return to_return
     except KeyError, AttributeError:
         return {}
