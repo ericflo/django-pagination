@@ -51,7 +51,7 @@ def do_autopaginate(parser, token):
     else:
         raise template.TemplateSyntaxError('%r tag takes one required ' +
             'argument and one optional argument' % split[0])
-
+        
 class AutoPaginateNode(template.Node):
     """
     Emits the required objects to allow for Digg-style pagination.
@@ -69,10 +69,10 @@ class AutoPaginateNode(template.Node):
         tag.  If you choose not to use *{% paginate %}*, make sure to display the
         list of available pages, or else the application may seem to be buggy.
     """
-    def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION,
+    def __init__(self, queryset_var, paginate_by=None,
         orphans=DEFAULT_ORPHANS, context_var=None):
         self.queryset_var = template.Variable(queryset_var)
-        if isinstance(paginate_by, int):
+        if (paginate_by == None):
             self.paginate_by = paginate_by
         else:
             self.paginate_by = template.Variable(paginate_by)
@@ -82,8 +82,8 @@ class AutoPaginateNode(template.Node):
     def render(self, context):
         key = self.queryset_var.var
         value = self.queryset_var.resolve(context)
-        if isinstance(self.paginate_by, int):
-            paginate_by = self.paginate_by
+        if (self.paginate_by == None):
+            paginate_by = int(context['request'].perpage)
         else:
             paginate_by = self.paginate_by.resolve(context)
         paginator = Paginator(value, paginate_by, self.orphans)
@@ -224,7 +224,30 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
         return to_return
     except KeyError, AttributeError:
         return {}
-
 register.inclusion_tag('pagination/pagination.html', takes_context=True)(
     paginate)
 register.tag('autopaginate', do_autopaginate)
+
+
+@register.inclusion_tag('pagination/perpageselect.html')
+def perpageselect (*args):
+    """
+    Reads the arguments to the perpageselect tag and formats them correctly.
+    """
+    try:
+        choices = [int(x) for x in args]
+        return {'choices': choices}
+    except(TypeError, ValueError):
+        raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % args)
+
+@register.inclusion_tag('pagination/perpageanchors.html')
+def perpageanchors (*args):
+    """
+    Reads the arguments to the perpageanchors tag and formats them correctly.
+    """
+    try:
+        choices = [int(x) for x in args]
+        return {'choices': choices}
+    except(TypeError, ValueError):
+        raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % args)
+    

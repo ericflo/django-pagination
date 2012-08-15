@@ -1,0 +1,9 @@
+{% load i18n %}
+<form action="." method="GET" name="perpage" >
+<select name="perpage">
+	{% for choice in choices %}
+	<option>{{choice}}</option>
+	{% endfor %}
+</select>
+<input type="submit" value='{% trans "Select" %}' />
+</form>
