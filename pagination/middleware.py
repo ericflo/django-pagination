@@ -1,4 +1,5 @@
 from django.conf import settings
+
 DEFAULT_PAGINATION = getattr(settings, 'PAGINATION_DEFAULT_PAGINATION', 20)
 
 

@@ -240,6 +240,7 @@ def perpageselect (*args):
     except(TypeError, ValueError):
         raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % args)
 
+
 @register.inclusion_tag('pagination/perpageanchors.html')
 def perpageanchors (*args):
     """
