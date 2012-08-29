@@ -87,11 +87,11 @@ class AutoPaginateNode(template.Node):
             paginate_by = int(context['request'].perpage)
         else:
             paginate_by = self.paginate_by.resolve(context)
-        if (paginate_by != 0):
-            paginator = Paginator(value, paginate_by, self.orphans)
-        else:
-            paginate_by = sys.maxint
-            paginator = Paginator(value, paginate_by, self.orphans)
+        if (paginate_by == 0):
+            context['page_obj'] = value
+            return u''
+        print (paginate_by)
+        paginator = Paginator(value, paginate_by, self.orphans)
         try:
             page_obj = paginator.page(context['request'].page)
         except InvalidPage:
@@ -104,7 +104,7 @@ class AutoPaginateNode(template.Node):
         if self.context_var is not None:
             context[self.context_var] = page_obj.object_list
         else:
-            context[key] = page_obj.object_list
+            context[key] = page_obj.object_list 
         context['paginator'] = paginator
         context['page_obj'] = page_obj
         return u''
@@ -227,7 +227,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             else:
                 to_return['getvars'] = ''
         return to_return
-    except KeyError, AttributeError:
+    except (KeyError, AttributeError):
         return {}
 register.inclusion_tag('pagination/pagination.html', takes_context=True)(
     paginate)
