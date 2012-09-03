@@ -2,8 +2,8 @@
 <form action="." method="GET" name="perpage" >
 <select name="perpage">
 	{% for choice in choices %}
-	<option>{{choice}}</option>
+	<option value="{{choice}}"> {% if choice == 0 %}{% trans "All" %}{% else %}{{choice}}{% endif %}</option>
 	{% endfor %}
 </select>
-<input type="submit" value='{% trans "Select" %}' />
+<input type="submit" value="{% trans 'Select' %}" />
 </form>
