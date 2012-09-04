@@ -7,7 +7,6 @@ from django import template
 from django.http import Http404
 from django.core.paginator import Paginator, InvalidPage 
 from django.conf import settings
-import sys
 
 register = template.Library()
 
@@ -90,7 +89,6 @@ class AutoPaginateNode(template.Node):
         if (paginate_by == 0):
             context['page_obj'] = value
             return u''
-        print (paginate_by)
         paginator = Paginator(value, paginate_by, self.orphans)
         try:
             page_obj = paginator.page(context['request'].page)
@@ -234,14 +232,15 @@ register.inclusion_tag('pagination/pagination.html', takes_context=True)(
 register.tag('autopaginate', do_autopaginate)
 
 
-@register.inclusion_tag('pagination/perpageselect.html')
-def perpageselect (*args):
+@register.inclusion_tag('pagination/perpageselect.html', takes_context='True')
+def perpageselect (context, *args):
     """
     Reads the arguments to the perpageselect tag and formats them correctly.
     """
     try:
         choices = [int(x) for x in args]
-        return {'choices': choices}
+        perpage = int(context['request'].perpage)
+        return {'choices': choices, 'perpage': perpage}
     except(TypeError, ValueError):
         raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % args)
 
