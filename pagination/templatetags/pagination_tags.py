@@ -245,14 +245,15 @@ def perpageselect (context, *args):
         raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % args)
 
 
-@register.inclusion_tag('pagination/perpageanchors.html')
-def perpageanchors (*args):
+@register.inclusion_tag('pagination/perpageanchors.html', takes_context='True')
+def perpageanchors (context, *args):
     """
     Reads the arguments to the perpageanchors tag and formats them correctly.
     """
     try:
         choices = [int(x) for x in args]
-        return {'choices': choices}
+        perpage = int(context['request'].perpage)
+        return {'choices': choices, 'perpage': perpage}
     except(TypeError, ValueError):
         raise template.TemplateSyntaxError(u'Got %s, but expected integer.' % args)
     
