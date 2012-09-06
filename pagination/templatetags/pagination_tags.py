@@ -206,6 +206,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             pages.extend(differenced)
         to_return = {
             'MEDIA_URL': settings.MEDIA_URL,
+            'request': context['request'],
             'pages': pages,
             'records': records,
             'page_obj': page_obj,
