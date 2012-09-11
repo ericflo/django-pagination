@@ -1,4 +1,12 @@
 {% load i18n %}
-{% for choice in choices %}
-<a href="?perpage={{choice}}" {% if perpage = choice %}class="perpage"{% endif %}>{% if choice == 0 %}{% trans "All" %}{% else %}{{choice}}{% endif %}</a>&nbsp;
-{% endfor %}
+<div class="perpageanchors">
+    {% for choice in choices %}
+        <span>
+        {% if perpage == choice %}
+            {% if choice == 0 %}{% trans "All" %}{% else %}{{choice}}{% endif %}
+        {% else %}
+            <a href="?perpage={{choice}}">{% if choice == 0 %}{% trans "All" %}{% else %}{{choice}}{% endif %}</a>
+        {% endif %}
+        </span>
+    {% endfor %}
+</div>
