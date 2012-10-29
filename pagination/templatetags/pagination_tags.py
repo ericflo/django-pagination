@@ -137,7 +137,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
         This is useful to maintain certain types of state, even when requesting
         a different page.
         """
-    if not context['paginator']:
+    if not context.get('paginator'):
         return {}
     try:
         paginator = context['paginator']
