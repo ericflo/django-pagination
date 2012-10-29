@@ -1,6 +1,6 @@
 """
 >>> from django.core.paginator import Paginator
->>> from pagination.templatetags.pagination_tags import paginate
+>>> from bootstrap_pagination.templatetags.pagination_tags import paginate
 >>> from django.template import Template, Context
 
 >>> p = Paginator(range(15), 2)
@@ -113,7 +113,7 @@ False
 >>> from paginator import FinitePaginator
 
 >>> FinitePaginator
-<class 'pagination.paginator.FinitePaginator'>
+<class 'bootstrap_pagination.paginator.FinitePaginator'>
 >>> p = FinitePaginator(range(20), 2, offset=10, link_template='/bacon/page/%d')
 >>> p.validate_number(2)
 2
@@ -148,7 +148,7 @@ True
 >>> p2.previous_link()
 '/bacon/page/1'
 
->>> from pagination.middleware import PaginationMiddleware
+>>> from bootstrap_pagination.middleware import PaginationMiddleware
 >>> from django.core.handlers.wsgi import WSGIRequest
 >>> from StringIO import StringIO
 >>> middleware = PaginationMiddleware()
