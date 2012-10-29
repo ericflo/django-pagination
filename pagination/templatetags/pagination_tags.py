@@ -82,6 +82,13 @@ class AutoPaginateNode(template.Node):
     def render(self, context):
         key = self.queryset_var.var
         value = self.queryset_var.resolve(context)
+        try:
+            # Little hack to avoid throwing exception when
+            # the queryset is empty. So we force the queryset
+            # evaluation before going forward.
+            value.count()
+        except:
+            return u''
         if isinstance(self.paginate_by, int):
             paginate_by = self.paginate_by
         else:
@@ -130,6 +137,8 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
         This is useful to maintain certain types of state, even when requesting
         a different page.
         """
+    if not context.get('paginator'):
+        return {}
     try:
         paginator = context['paginator']
         page_obj = context['page_obj']
