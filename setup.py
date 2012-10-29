@@ -3,10 +3,10 @@ from setuptools import setup, find_packages
 version = '1.0.7'
 
 LONG_DESCRIPTION = """
-How to use django-pagination
+How to use django-bootstrap-pagination
 ----------------------------
 
-``django-pagination`` allows for easy Digg-style pagination without modifying
+``django-bootstrap-pagination`` allows for easy Digg-style pagination without modifying
 your views.
 
 There are really 5 steps to setting it up with your projects (not including 
@@ -17,7 +17,7 @@ installation, which is covered in INSTALL.txt in this same directory.)
    
        INSTALLED_APPS = (
            # ...
-           'pagination',
+           'bootstrap_pagination',
        )
 
 
@@ -26,7 +26,7 @@ installation, which is covered in INSTALL.txt in this same directory.)
    
        MIDDLEWARE_CLASSES = (
            # ...
-           'pagination.middleware.PaginationMiddleware',
+           'bootstrap_pagination.middleware.PaginationMiddleware',
        )
 
 3. If it's not already added in your setup, add the request context processor.
@@ -102,9 +102,9 @@ pagination tags.  Here's an overview:
 """
 
 setup(
-    name='django-pagination',
+    name='django-bootstrap-pagination',
     version=version,
-    description="django-pagination",
+    description="django-bootstrap-pagination",
     long_description=LONG_DESCRIPTION,
     classifiers=[
         "Programming Language :: Python",
@@ -112,10 +112,10 @@ setup(
         "Framework :: Django",
         "Environment :: Web Environment",
     ],
-    keywords='pagination,django',
+    keywords='bootstrap,pagination,django',
     author='Eric Florenzano',
     author_email='floguy@gmail.com',
-    url='http://django-pagination.googlecode.com/',
+    url='https://github.com/tgdn/django-bootstrap-pagination',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,
