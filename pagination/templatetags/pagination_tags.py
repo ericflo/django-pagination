@@ -216,6 +216,8 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
         if 'request' in context:
             query_var = getattr(settings, "PAGINATION_QUERY_VAR", 'page')
             getvars = context['request'].GET.copy()
+            if "_" in getvars:
+                del getvars["_"]
             if query_var in getvars:
                 del getvars[query_var]
             if len(getvars.keys()) > 0:
