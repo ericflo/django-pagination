@@ -214,13 +214,18 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'is_paginated': paginator.count > paginator.per_page,
         }
         if 'request' in context:
+            query_var = getattr(settings, "PAGINATION_QUERY_VAR", 'page')
             getvars = context['request'].GET.copy()
-            if 'page' in getvars:
-                del getvars['page']
+            if "_" in getvars:
+                del getvars["_"]
+            if query_var in getvars:
+                del getvars[query_var]
             if len(getvars.keys()) > 0:
                 to_return['getvars'] = "&%s" % getvars.urlencode()
             else:
                 to_return['getvars'] = ''
+        if 'link_prefix' in context:
+            to_return['link_prefix'] = context['link_prefix']
         return to_return
     except KeyError, AttributeError:
         return {}
