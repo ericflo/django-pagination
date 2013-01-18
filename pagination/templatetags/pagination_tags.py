@@ -131,6 +131,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
         a different page.
         """
     try:
+        pagination_base_url = ''
         paginator = context['paginator']
         page_obj = context['page_obj']
         page_range = paginator.page_range
@@ -204,6 +205,8 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             differenced = list(last.difference(current))
             differenced.sort()
             pages.extend(differenced)
+        if 'pagination_base_url' in context:
+            pagination_base_url = context['pagination_base_url']
         to_return = {
             'MEDIA_URL': settings.MEDIA_URL,
             'pages': pages,
@@ -212,6 +215,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'paginator': paginator,
             'hashtag': hashtag,
             'is_paginated': paginator.count > paginator.per_page,
+            'pagination_base_url': pagination_base_url
         }
         if 'request' in context:
             getvars = context['request'].GET.copy()
