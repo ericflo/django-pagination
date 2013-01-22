@@ -1,5 +1,5 @@
 include LICENSE.txt
 include CONTRIBUTORS.txt
 recursive-include docs *
-recursive-include pagination/locale/*
+recursive-include pagination/locale *
 recursive-include pagination/templates/pagination *.html
