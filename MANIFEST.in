@@ -2,3 +2,4 @@ include LICENSE.txt
 include CONTRIBUTORS.txt
 recursive-include docs *
 recursive-include pagination/templates/pagination *.html
+recursive-include pagination/locale *.mo *.po
