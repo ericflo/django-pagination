@@ -204,6 +204,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             differenced = list(last.difference(current))
             differenced.sort()
             pages.extend(differenced)
+
         to_return = {
             'MEDIA_URL': settings.MEDIA_URL,
             'pages': pages,
@@ -213,17 +214,41 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'hashtag': hashtag,
             'is_paginated': paginator.count > paginator.per_page,
         }
+        
         if 'request' in context:
+
             to_return['request'] = context['request']
+
             getvars = context['request'].GET.copy()
+
             if 'page' in getvars:
                 del getvars['page']
+
             if len(getvars.keys()) > 0:
-                to_return['getvars'] = "&%s" % getvars.urlencode()
+                getvars_string = "&%s" % getvars.urlencode()
             else:
-                to_return['getvars'] = ''
+                getvars_string = ''
+            to_return['getvars'] = getvars_string
+
+            request = context['request']
+
+            good_pages = []  # dicts
+            for page in pages:
+                if page == 1:
+                    url = request.META['PATH_INFO']
+                    if getvars:
+                        url += '?' + getvars[1:]
+                else:
+                    url = '?page={0}{1}'.format(page, getvars, hashtag)
+
+                good_pages.append({
+                    'number': page,
+                    'url': url,
+                })
+            to_return['pages'] = good_pages
+
         return to_return
-    except KeyError, AttributeError:
+    except (KeyError, AttributeError):
         return {}
 
 register.inclusion_tag('pagination/pagination.html', takes_context=True)(
