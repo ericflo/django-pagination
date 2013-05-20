@@ -237,9 +237,9 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
                 if page == 1:
                     url = request.META['PATH_INFO']
                     if getvars:
-                        url += '?' + getvars[1:]
+                        url += '?' + getvars_string[1:]
                 else:
-                    url = '?page={0}{1}'.format(page, getvars, hashtag)
+                    url = '?page={0}{1}'.format(page, getvars_string, hashtag)
 
                 good_pages.append({
                     'number': page,
