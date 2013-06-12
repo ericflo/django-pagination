@@ -54,9 +54,9 @@ installation, which is covered in INSTALL.txt in this same directory.)
        {% autopaginate object_list 10 %}
    
    Note that this replaces ``object_list`` with the list for the current page, so
-   you can iterate over the ``object_list`` like you normally would.
+   you can iterate over the ``object_list`` like you normally would.  
+       
    
-
 6. Now you want to display the current page and the available pages, so
    somewhere after having used autopaginate, use the paginate inclusion tag:
    
@@ -68,6 +68,21 @@ installation, which is covered in INSTALL.txt in this same directory.)
 
 That's it!  You have now paginated ``object_list`` and given users of the site
 a way to navigate between the different pages--all without touching your views.
+
+
+Dotted variable names
+---------------------
+
+Note also that *pagination won't work for dotted variable names*. For example,
+you won't be able to paginate a list called ``some_thing.object_list``. 
+
+Instead, you can assign ``some_thing.object_list`` to another variable using
+{% with %}::
+
+   {% with some_thing.object_list as object_list %}
+       {% autopaginate object_list %}
+       {% paginate %}
+   {% endwith %}
 
 
 A Note About Uploads
