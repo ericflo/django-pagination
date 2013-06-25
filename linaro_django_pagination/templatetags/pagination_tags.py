@@ -183,10 +183,10 @@ class PaginateNode(Node):
 
     def render(self, context):
         template_list = ['pagination/pagination.html']
-        to_return = paginate(context)
+        new_context = paginate(context)
         if self.template:
             template_list.insert(0, self.template)
-        return loader.render_to_string(template_list, to_return, 
+        return loader.render_to_string(template_list, new_context, 
             context_instance = context)
 
 
@@ -303,7 +303,7 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
             if pages[-1] != paginator.num_pages:
                 pages.append(None)
 
-        to_return = {
+        new_context = {
             'MEDIA_URL': settings.MEDIA_URL,
             'STATIC_URL': getattr(settings, "STATIC_URL", None),
             'display_disabled_next_link': DISPLAY_DISABLED_NEXT_LINK,
@@ -323,14 +323,14 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
             if 'page%s' % page_suffix in getvars:
                 del getvars['page%s' % page_suffix]
             if len(getvars.keys()) > 0:
-                to_return['getvars'] = "&%s" % getvars.urlencode()
+                new_context['getvars'] = "&%s" % getvars.urlencode()
             else:
-                to_return['getvars'] = ''
-        return to_return
+                new_context['getvars'] = ''
+        return new_context
     except (KeyError, AttributeError):
-        to_return = {}
+        new_context = {}
 
-    context.update(to_return)
+    context.update(new_context)
 
     return context
 
