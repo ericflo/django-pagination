@@ -328,7 +328,11 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
                 to_return['getvars'] = ''
         return to_return
     except (KeyError, AttributeError):
-        return {}
+        to_return = {}
+
+    context.update(to_return)
+
+    return context
 
 
 register = Library()
