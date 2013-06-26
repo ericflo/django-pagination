@@ -48,4 +48,7 @@ locals().update(
         TEMPLATE_CONTEXT_PROCESSORS=[
             # Request processor needs to be enabled
             'django.core.context_processors.request'],
-        ROOT_URLCONF="linaro_django_pagination.test_project.urls"))
+        ROOT_URLCONF="linaro_django_pagination.test_project.urls"),
+        TEMPLATE_LOADERS = ['django.template.loaders.app_directories.Loader'],
+        SECRET_KEY = 'not for production',
+    )

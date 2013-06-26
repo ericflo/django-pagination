@@ -186,7 +186,7 @@ class PaginateNode(Node):
         new_context = paginate(context)
         if self.template:
             template_list.insert(0, self.template)
-        return loader.render_to_string(template_list, new_context, 
+        return loader.render_to_string(template_list, new_context,
             context_instance = context)
 
 
@@ -326,10 +326,9 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
                 new_context['getvars'] = "&%s" % getvars.urlencode()
             else:
                 new_context['getvars'] = ''
+        return new_context
     except (KeyError, AttributeError):
-        new_context = {}
-
-    context.update(new_context)
+        pass
 
     return context
 
