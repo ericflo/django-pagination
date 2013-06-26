@@ -326,6 +326,7 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
                 new_context['getvars'] = "&%s" % getvars.urlencode()
             else:
                 new_context['getvars'] = ''
+        return new_context
     except (KeyError, AttributeError):
         new_context = {}
 
