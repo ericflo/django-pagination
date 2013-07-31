@@ -1,0 +1,22 @@
+{% if is_paginated %}
+{% load i18n %}
+<div class="pagination">
+
+    {% for page in pages %}
+        {% if forloop.first %}
+            <!-- This hack removes elipsis before first page element -->
+        {% else %}
+            {% if page %}
+                {% ifequal page page_obj.number %}
+                    <span class="current page">{{ page }}</span>
+                {% else %}
+                    <a href="?page={{ page }}{{ getvars }}{{ hashtag }}" class="page">{{ page }}</a>
+                {% endifequal %}
+            {% else %}
+                <span>...</span>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+</div>
+{% endif %}

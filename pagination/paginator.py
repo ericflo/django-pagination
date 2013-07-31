@@ -52,6 +52,7 @@ class InfinitePaginator(Paginator):
         """
         Returns the total number of objects, across all pages.
         """
+        
         raise NotImplementedError
     count = property(_get_count)
 
@@ -59,6 +60,7 @@ class InfinitePaginator(Paginator):
         """
         Returns the total number of pages.
         """
+        
         raise NotImplementedError
     num_pages = property(_get_num_pages)
 
@@ -67,10 +69,36 @@ class InfinitePaginator(Paginator):
         Returns a 1-based range of pages for iterating through within
         a template for loop.
         """
+        
         raise NotImplementedError
     page_range = property(_get_page_range)
 
+class FakeInfinitePaginator(InfinitePaginator):
+    """
+    Paginator designed for cases when it's not important to know how many total
+    pages.  This is useful for any object_list that has no count() method or can
+    be used to improve performance for MySQL by removing counts.
 
+    The orphans parameter has been removed for simplicity and there's a link
+    template string for creating the links to the next and previous pages.
+    """
+
+    def _get_count(self):
+        """
+        Returns the total number of objects, across all pages.
+        """
+
+        return 10000
+    count = property(_get_count)
+
+    def _get_num_pages(self):
+        """
+        Returns the total number of pages.
+        """
+
+        return 100
+    num_pages = property(_get_num_pages)
+    
 class InfinitePage(Page):
 
     def __repr__(self):
@@ -80,6 +108,7 @@ class InfinitePage(Page):
         """
         Checks for one more item than last on this page.
         """
+        
         try:
             next_item = self.paginator.object_list[
                 self.number * self.paginator.per_page]
@@ -106,6 +135,27 @@ class InfinitePage(Page):
         if self.has_previous():
             return self.paginator.link_template % (self.number - 1)
         return None
+
+
+class CachedCountPaginator(Paginator):
+    """
+    Nearly Identical to the core Django Paginator with the exception that it uses queryset cache counts.
+    Saves big MySQL Count queries. Object_list must be a model queryset.
+    """
+
+    def _get_count(self):
+        "Returns the total number of objects, across all pages."
+        if self._count is None:
+            try:
+                self._count = self.object_list.get_cached_count()
+            except (AttributeError, TypeError):
+                # AttributeError if object_list has no count() method.
+                # TypeError if object_list.count() requires arguments
+                # (i.e. is of type list).
+                self._count = len(self.object_list)
+        return self._count
+    count = property(_get_count)
+
 
 class FinitePaginator(InfinitePaginator):
     """

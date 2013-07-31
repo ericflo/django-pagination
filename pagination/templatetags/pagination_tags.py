@@ -7,6 +7,7 @@ from django import template
 from django.http import Http404
 from django.core.paginator import Paginator, InvalidPage
 from django.conf import settings
+from pagination.paginator import CachedCountPaginator
 
 register = template.Library()
 
@@ -16,41 +17,57 @@ DEFAULT_ORPHANS = getattr(settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
 INVALID_PAGE_RAISES_404 = getattr(settings,
     'PAGINATION_INVALID_PAGE_RAISES_404', False)
 
-def do_autopaginate(parser, token):
-    """
-    Splits the arguments to the autopaginate tag and formats them correctly.
-    """
-    split = token.split_contents()
-    as_index = None
-    context_var = None
-    for i, bit in enumerate(split):
-        if bit == 'as':
-            as_index = i
-            break
-    if as_index is not None:
-        try:
-            context_var = split[as_index + 1]
-        except IndexError:
-            raise template.TemplateSyntaxError("Context variable assignment " +
-                "must take the form of {%% %r object.example_set.all ... as " +
-                "context_var_name %%}" % split[0])
-        del split[as_index:as_index + 2]
-    if len(split) == 2:
-        return AutoPaginateNode(split[1])
-    elif len(split) == 3:
-        return AutoPaginateNode(split[1], paginate_by=split[2], 
-            context_var=context_var)
-    elif len(split) == 4:
-        try:
-            orphans = int(split[3])
-        except ValueError:
-            raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
-                % split[3])
-        return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans,
-            context_var=context_var)
-    else:
-        raise template.TemplateSyntaxError('%r tag takes one required ' +
-            'argument and one optional argument' % split[0])
+# def do_autopaginate(parser, token, PaginateNode=None):
+#     """
+#     Splits the arguments to the autopaginate tag and formats them correctly.
+#     """
+#     PaginateNode = AutoPaginateNode if not PaginateNode else PaginateNode
+#     split = token.split_contents()
+#     as_index = None
+#     context_var = None
+#     cache_counts = None
+#     for i, bit in enumerate(split):
+#         if bit == 'as':
+#             as_index = i
+#             continue
+#         if bit == 'cache_counts':
+#             cache_counts = i
+#             continue
+#     if as_index is not None:
+#         try:
+#             context_var = split[as_index + 1]
+#         except IndexError:
+#             raise template.TemplateSyntaxError("Context variable assignment " +
+#                 "must take the form of {%% %r object.example_set.all ... as " +
+#                 "context_var_name %%}" % split[0])
+#         del split[as_index:as_index + 2]
+#     if cache_counts is not None:
+#         del split[cache_counts:cache_counts + 1]
+#         PaginateNode = CachedAutoPaginateNode
+#     if len(split) == 2:
+#         return PaginateNode(split[1])
+#     elif len(split) == 3:
+#         return PaginateNode(split[1], paginate_by=split[2], 
+#             context_var=context_var)
+#     elif len(split) == 4:
+#         try:
+#             orphans = int(split[3])
+#         except ValueError:
+#             raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
+#                 % split[3])
+#         return PaginateNode(split[1], paginate_by=split[2], orphans=orphans,
+#             context_var=context_var)
+#     else:
+#         raise template.TemplateSyntaxError('%r tag takes one required ' +
+#             'argument and one optional argument' % split[0])
+
+
+# def cached_count_paginate(parser, token):
+#     """
+#     Caches Queryset counts to improve the performance of the built-in Django Paginator
+#     """
+#     return do_autopaginate(parser, token, PaginateNode=CachedAutoPaginateNode)
+
 
 class AutoPaginateNode(template.Node):
     """
@@ -68,9 +85,13 @@ class AutoPaginateNode(template.Node):
         It is recommended to use *{% paginate %}* after using the autopaginate
         tag.  If you choose not to use *{% paginate %}*, make sure to display the
         list of available pages, or else the application may seem to be buggy.
+        
+        The paginator attribute has been added for Yipit customization to allow for 
+        a custom paginator (YipitInfinitePaginator). The default is the django core Paginator
+        object, which is what AutoPaginateNode used pre-forking.
     """
     def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION,
-        orphans=DEFAULT_ORPHANS, context_var=None):
+        orphans=DEFAULT_ORPHANS, context_var=None, paginator=Paginator):
         self.queryset_var = template.Variable(queryset_var)
         if isinstance(paginate_by, int):
             self.paginate_by = paginate_by
@@ -78,6 +99,7 @@ class AutoPaginateNode(template.Node):
             self.paginate_by = template.Variable(paginate_by)
         self.orphans = orphans
         self.context_var = context_var
+        self.paginator = paginator
 
     def render(self, context):
         key = self.queryset_var.var
@@ -86,7 +108,7 @@ class AutoPaginateNode(template.Node):
             paginate_by = self.paginate_by
         else:
             paginate_by = self.paginate_by.resolve(context)
-        paginator = Paginator(value, paginate_by, self.orphans)
+        paginator = self.paginator(value, paginate_by)
         try:
             page_obj = paginator.page(context['request'].page)
         except InvalidPage:
@@ -103,6 +125,59 @@ class AutoPaginateNode(template.Node):
         context['paginator'] = paginator
         context['page_obj'] = page_obj
         return u''
+
+
+class CachedAutoPaginateNode(AutoPaginateNode):
+
+    def __init__(self, queryset_var, paginate_by=DEFAULT_PAGINATION,
+        orphans=DEFAULT_ORPHANS, context_var=None, paginator=CachedCountPaginator):
+        
+        super(CachedAutoPaginateNode, self).__init__(queryset_var, paginate_by=paginate_by,
+            orphans=orphans, context_var=context_var, paginator=paginator)
+
+
+def do_autopaginate(parser, token, PaginateNode=AutoPaginateNode):
+    """
+    Splits the arguments to the autopaginate tag and formats them correctly.
+    """
+    split = token.split_contents()
+    as_index = None
+    context_var = None
+    cache_counts = None
+    for i, bit in enumerate(split):
+        if bit == 'as':
+            as_index = i
+            continue
+        if bit == 'cache_counts':
+            cache_counts = i
+            continue
+    if as_index is not None:
+        try:
+            context_var = split[as_index + 1]
+        except IndexError:
+            raise template.TemplateSyntaxError("Context variable assignment " +
+                "must take the form of {%% %r object.example_set.all ... as " +
+                "context_var_name %%}" % split[0])
+        del split[as_index:as_index + 2]
+    if cache_counts is not None:
+        del split[cache_counts:cache_counts + 1]
+        PaginateNode = CachedAutoPaginateNode
+    if len(split) == 2:
+        return PaginateNode(split[1])
+    elif len(split) == 3:
+        return PaginateNode(split[1], paginate_by=split[2], 
+            context_var=context_var)
+    elif len(split) == 4:
+        try:
+            orphans = int(split[3])
+        except ValueError:
+            raise template.TemplateSyntaxError(u'Got %s, but expected integer.'
+                % split[3])
+        return PaginateNode(split[1], paginate_by=split[2], orphans=orphans,
+            context_var=context_var)
+    else:
+        raise template.TemplateSyntaxError('%r tag takes one required ' +
+            'argument and one optional argument' % split[0])
 
 
 def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
@@ -225,6 +300,105 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
     except KeyError, AttributeError:
         return {}
 
-register.inclusion_tag('pagination/pagination.html', takes_context=True)(
+
+def tailless_paginate(context, window=DEFAULT_WINDOW, hashtag=''):
+    try:
+        paginator = context['paginator']
+        page_obj = context['page_obj']
+        page_range = paginator.page_range
+        # Calculate the record range in the current page for display.
+        records = {'first': 1 + (page_obj.number - 1) * paginator.per_page}
+        records['last'] = records['first'] + paginator.per_page - 1
+        if records['last'] + paginator.orphans >= paginator.count:
+            records['last'] = paginator.count
+
+        middle = page_obj.number
+        length = len(page_range)
+        
+        # If the current page is too close to the beginning or end, let us
+        # pretend that the current page is at least 'window' length away
+        if middle < window:
+            middle = window 
+        if middle > length - window:
+            middle = length - window
+
+        # Now we look around our current page, making sure that we don't wrap
+        # around.
+        current_start = middle-1-window
+        
+        #Increment current_start
+        current_start += 1
+        
+        if current_start < 0:
+            current_start = 0
+        current_end = middle-1+window
+        if current_end < 0:
+            current_end = 0
+
+        pages = []
+        
+        if (current_end > length - 2):
+            current_end = length
+
+        current = set(page_range[current_start:current_end])
+        first = set(page_range[0:2])
+        
+        # If there's no overlap between the first set of pages and the current
+        # set of pages, then there's a possible need for elusion.
+        if len(first.intersection(current)) == 0:
+            first_list = list(first)
+            first_list.sort()
+            second_list = list(current)
+            second_list.sort()
+            pages.extend(first_list)
+            diff = second_list[0] - first_list[-1]
+            # If there is a gap of two, between the last page of the first
+            # set and the first page of the current set, then we're missing a
+            # page.
+            if diff == 2:
+                pages.append(second_list[0] - 1)
+            # If the difference is just one, then there's nothing to be done,
+            # as the pages need no elusion and are correct.
+            elif diff == 1:
+                pass
+            # Otherwise, there's a bigger gap which needs to be signaled for
+            # elusion, by pushing a None value to the page list.
+            else:
+                pages.append(None)
+            pages.extend(second_list)
+        else:
+            unioned = list(first.union(current))
+            unioned.sort()
+            pages.extend(unioned)
+        
+        if (current_end < length):
+            pages.append(None)
+
+        to_return = {
+            'MEDIA_URL': settings.MEDIA_URL,
+            'pages': pages,
+            'records': records,
+            'page_obj': page_obj,
+            'paginator': paginator,
+            'hashtag': hashtag,
+            'is_paginated': paginator.count > paginator.per_page,
+        }
+        if 'request' in context:
+            getvars = context['request'].GET.copy()
+            if 'page' in getvars:
+                del getvars['page']
+            if len(getvars.keys()) > 0:
+                to_return['getvars'] = "&%s" % getvars.urlencode()
+            else:
+                to_return['getvars'] = ''
+        return to_return
+    except KeyError, AttributeError:
+        return {}
+
+
+register.inclusion_tag('pagination/yipit_pagination.html', takes_context=True)(
     paginate)
+register.inclusion_tag('pagination/tailless_pagination.html', takes_context=True)(
+    tailless_paginate)
 register.tag('autopaginate', do_autopaginate)
+# register.tag('cachedpaginate', cached_count_paginate)

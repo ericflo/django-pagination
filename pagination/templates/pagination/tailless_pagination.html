@@ -1,0 +1,16 @@
+{% if is_paginated %}
+{% load i18n %}
+<div class="pagination">
+    {% for page in pages %}
+        {% if page %}
+            {% ifequal page page_obj.number %}
+                <span class="current page">{{ page }}</span>
+            {% else %}
+                <a href="?page={{ page }}{{ getvars }}{{ hashtag }}" class="page">{{ page }}</a>
+            {% endifequal %}
+        {% else %}
+            <span>...</span>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
