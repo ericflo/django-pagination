@@ -102,7 +102,7 @@ pagination tags.  Here's an overview:
 """
 
 setup(
-    name='django-pagination',
+    name='django-pagination-yipit',
     version=version,
     description="django-pagination",
     long_description=LONG_DESCRIPTION,
