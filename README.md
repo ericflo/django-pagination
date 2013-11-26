@@ -26,8 +26,8 @@ And in the INSTALLED_APPS add ```'pagination'```
 
 Example:
 =================
-{% perpageselect 10 20 30 %} will show dropdown list with choices 10, 20 and 30 objects per page.
-{% perpageanchors 10 20 30 %} will show anchors with choices 10, 20 and 30 objects per page.
+```{% perpageselect 10 20 30 %}``` will show dropdown list with choices 10, 20 and 30 objects per page.
+```{% perpageanchors 10 20 30 %}``` will show anchors with choices 10, 20 and 30 objects per page.
 
 
 Usage:
