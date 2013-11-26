@@ -35,7 +35,7 @@ Usage:
 ```
 {% load pagination_tags %}
 
-    {% autopaginate object_list 10 %}
+    {% autopaginate object_list 10 %} <!--OR THIS {% perpageselect 10 20 30 %} -->
         {% for post in object_list %}
            bla-bla-bla
         {% endfor %}
