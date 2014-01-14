@@ -60,7 +60,7 @@ def do_autopaginate(parser, token):
     # Check whether there are any other autopaginations are later in this template
     expr = lambda obj: (obj.token_type == TOKEN_BLOCK and \
         len(obj.split_contents()) > 0 and obj.split_contents()[0] == "autopaginate")
-    multiple_paginations = len(filter(expr, parser.tokens)) > 0
+    multiple_paginations = len([tok for tok in parser.tokens if expr(tok)]) > 0
 
     i = iter(token.split_contents())
     paginate_by = None
@@ -69,26 +69,26 @@ def do_autopaginate(parser, token):
     orphans = None
     word = None
     try:
-        word = i.next()
+        word = next(i)
         assert word == "autopaginate"
-        queryset_var = i.next()
-        word = i.next()
+        queryset_var = next(i)
+        word = next(i)
         if word != "as":
             paginate_by = word
             try:
                 paginate_by = int(paginate_by)
             except ValueError:
                 pass
-            word = i.next()
+            word = next(i)
         if word != "as":
             orphans = word
             try:
                 orphans = int(orphans)
             except ValueError:
                 pass
-            word = i.next()
+            word = next(i)
         assert word == "as"
-        context_var = i.next()
+        context_var = next(i)
     except StopIteration:
         pass
     if queryset_var is None:
