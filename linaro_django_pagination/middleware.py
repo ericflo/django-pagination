@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright (c) 2008, Eric Florenzano
 # Copyright (c) 2010, 2011 Linaro Limited
 # All rights reserved.
@@ -29,50 +28,22 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from setuptools import setup, find_packages
+
+def get_page(self, suffix):
+    """
+    A function which will be monkeypatched onto the request to get the current
+    integer representing the current page.
+    """
+    try:
+        return int(self.REQUEST['page%s' % suffix])
+    except (KeyError, ValueError, TypeError):
+        return 1
 
 
-try:
-    import versiontools
-except ImportError:
-    print "This package requires python-versiontools to be configured"
-    print "See: http://packages.python.org/versiontools/installation.html"
-    raise
-
-
-import linaro_django_pagination
-
-
-setup(
-    name='linaro-django-pagination',
-    version=versiontools.format_version(linaro_django_pagination.__version__),
-    author='Zygmunt Krynicki',
-    author_email='zygmunt.krynicki@linaro.org',
-    description="linaro-django-pagination",
-    long_description=open("README").read(),
-    keywords='pagination,django',
-    url='https://github.com/zyga/django-pagination',
-    test_suite='linaro_django_pagination.test_project.tests.run_tests',
-    license='BSD',
-    packages=find_packages(),
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Environment :: Web Environment",
-        "Framework :: Django",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: BSD License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
-    ],
-    install_requires=[
-        'django >= 1.2',
-    ],
-    tests_require=[
-        'django-testproject >= 0.1',
-    ],
-    setup_requires=[
-        'versiontools >= 1.2'
-    ],
-    include_package_data=True,
-)
+class PaginationMiddleware(object):
+    """
+    Inserts a variable representing the current page onto the request object if
+    it exists in either **GET** or **POST** portions of the request.
+    """
+    def process_request(self, request):
+        request.__class__.page = get_page

@@ -1,0 +1,21 @@
+{% extends "django_testproject/base.html" %}
+{% load pagination_tags %}
+
+
+{% block content %}
+<p>This page demonstrates how autopaginate behaves under certain conditions</p>
+<p>Below you can see two lists.</p>
+<p>First list has {{ first_item_list|length }} items.</p>
+{% autopaginate first_item_list 5 %}
+{% for item in first_item_list %}
+<p>{{item}}</p>
+{% endfor %}
+{% paginate using "pagination/custom_pagination.html" %}
+
+<p>Second list has {{ second_item_list|length}} items.</p>
+{% autopaginate second_item_list 5 %}
+{% paginate %}
+{% for item in second_item_list %}
+<p>{{item}}</p>
+{% endfor %}
+{% endblock %}

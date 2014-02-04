@@ -1,0 +1,13 @@
+{% extends "django_testproject/base.html" %}
+{% load pagination_tags %}
+
+
+{% block content %}
+<p>This page demonstrates how autopaginate behaves under certain conditions</p>
+<p>Below you can see a list of {{ item_list|length }} items.</p>
+{% autopaginate item_list %}
+{% for item in item_list %}
+<p>Item {{item}}</p>
+{% endfor %}
+{% paginate %}
+{% endblock %}

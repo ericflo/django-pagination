@@ -1,0 +1,7 @@
+{% extends "pagination/pagination.html" %}
+
+
+{% block previouslink %}
+  <p style="color: red; background-color: white;">This part is custom</p>
+  {{ block.super }}
+{% endblock previouslink %}
