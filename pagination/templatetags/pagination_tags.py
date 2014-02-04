@@ -7,6 +7,7 @@ from django import template
 from django.http import Http404
 from django.core.paginator import Paginator, InvalidPage
 from django.conf import settings
+from django.template.context import RequestContext, Context
 
 register = template.Library()
 
@@ -204,23 +205,25 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             differenced = list(last.difference(current))
             differenced.sort()
             pages.extend(differenced)
-        to_return = {
-            'MEDIA_URL': settings.MEDIA_URL,
-            'pages': pages,
-            'records': records,
-            'page_obj': page_obj,
-            'paginator': paginator,
-            'hashtag': hashtag,
-            'is_paginated': paginator.count > paginator.per_page,
-        }
+        to_return = Context()
+        to_return.update(context)
+        to_return.update({
+                'MEDIA_URL': settings.MEDIA_URL,
+                'pages': pages,
+                'records': records,
+                'page_obj': page_obj,
+                'paginator': paginator,
+                'hashtag': hashtag,
+                'is_paginated': paginator.count > paginator.per_page,
+            })
         if 'request' in context:
             getvars = context['request'].GET.copy()
             if 'page' in getvars:
                 del getvars['page']
             if len(getvars.keys()) > 0:
-                to_return['getvars'] = "&%s" % getvars.urlencode()
+                to_return.update({'getvars': '&%s' % getvars.urlencode()})
             else:
-                to_return['getvars'] = ''
+                to_return.update({'getvars': ''})
         return to_return
     except KeyError, AttributeError:
         return {}
