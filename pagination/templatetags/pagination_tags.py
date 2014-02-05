@@ -10,7 +10,7 @@ from django.conf import settings
 
 register = template.Library()
 
-DEFAULT_PAGINATION = getattr(settings, 'PAGINATION_DEFAULT_PAGINATION', 20)
+DEFAULT_PAGINATION = getattr(settings, 'PAGINATION_DEFAULT_TOTAL', 9) # aka PAGINATION_DEFAULT_PAGINATION
 DEFAULT_WINDOW = getattr(settings, 'PAGINATION_DEFAULT_WINDOW', 4)
 DEFAULT_ORPHANS = getattr(settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
 INVALID_PAGE_RAISES_404 = getattr(settings,
@@ -82,7 +82,9 @@ class AutoPaginateNode(template.Node):
     def render(self, context):
         key = self.queryset_var.var
         value = self.queryset_var.resolve(context)
-        if isinstance(self.paginate_by, int):
+        if "paginator_option" in context: # User has defined how many items wants to see per page
+            paginate_by = context["paginator_option"]
+        elif isinstance(self.paginate_by, int):
             paginate_by = self.paginate_by
         else:
             paginate_by = self.paginate_by.resolve(context)
