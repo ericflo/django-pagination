@@ -11,7 +11,7 @@ class InfinitePaginator(Paginator):
     """
 
     def __init__(self, object_list, per_page, allow_empty_first_page=True,
-        link_template='/page/%d/'):
+        link_template='/page/{}/'):
         orphans = 0 # no orphans
         super(InfinitePaginator, self).__init__(object_list, per_page, orphans,
             allow_empty_first_page)
@@ -74,7 +74,7 @@ class InfinitePaginator(Paginator):
 class InfinitePage(Page):
 
     def __repr__(self):
-        return '<Page %s>' % self.number
+        return '<Page {}>'.format(self.number)
 
     def has_next(self):
         """
@@ -99,12 +99,12 @@ class InfinitePage(Page):
 
     def next_link(self):
         if self.has_next():
-            return self.paginator.link_template % (self.number + 1)
+            return self.paginator.link_template.format(self.number + 1)
         return None
 
     def previous_link(self):
         if self.has_previous():
-            return self.paginator.link_template % (self.number - 1)
+            return self.paginator.link_template.format(self.number - 1)
         return None
 
 class FinitePaginator(InfinitePaginator):

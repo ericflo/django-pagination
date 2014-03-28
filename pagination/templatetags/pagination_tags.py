@@ -34,8 +34,8 @@ def do_autopaginate(parser, token):
             context_var = split[as_index + 1]
         except IndexError:
             raise template.TemplateSyntaxError("Context variable assignment " +
-                "must take the form of {%% %r object.example_set.all ... as " +
-                "context_var_name %%}" % split[0])
+                "must take the form of {%% {} object.example_set.all ... as " +
+                "context_var_name %%}".format(split[0]))
         del split[as_index:as_index + 2]
     if len(split) == 2:
         return AutoPaginateNode(split[1])
@@ -46,13 +46,13 @@ def do_autopaginate(parser, token):
         try:
             orphans = int(split[3])
         except ValueError:
-            raise template.TemplateSyntaxError('Got %s, but expected integer.'
-                % split[3])
+            raise template.TemplateSyntaxError('Got {}, but expected integer.'\
+                .format(split[3]))
         return AutoPaginateNode(split[1], paginate_by=split[2], orphans=orphans,
             context_var=context_var)
     else:
-        raise template.TemplateSyntaxError('%r tag takes one required ' +
-            'argument and one optional argument' % split[0])
+        raise template.TemplateSyntaxError('{} tag takes one required ' +
+            'argument and one optional argument'.format(split[0]))
 
 class AutoPaginateNode(template.Node):
     """
@@ -220,7 +220,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             if 'page' in getvars:
                 del getvars['page']
             if len(list(getvars.keys())) > 0:
-                to_return['getvars'] = "&%s" % getvars.urlencode()
+                to_return['getvars'] = "&{}".format(getvars.urlencode())
             else:
                 to_return['getvars'] = ''
         return to_return
