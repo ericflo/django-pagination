@@ -3,10 +3,11 @@ from setuptools import setup, find_packages
 version = '1.0.7'
 
 LONG_DESCRIPTION = """
-How to use django-pagination
-----------------------------
+How to use django-pagination-py3
+--------------------------------
 
-``django-pagination`` allows for easy Digg-style pagination without modifying
+``django-pagination-py3`` is a port of django-pagination to Python 3,
+that allows for easy Digg-style pagination without modifying
 your views.
 
 There are really 5 steps to setting it up with your projects (not including

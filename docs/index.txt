@@ -1,8 +1,8 @@
-#################
-django-pagination
-#################
+#####################
+django-pagination-py3
+#####################
 
-Django-pagination is a set of utilities for creating robust pagination tools 
+django-pagination-py3 is a set of utilities for creating robust pagination tools 
 throughout a django application.
 
 Contents:
