@@ -3,7 +3,11 @@
 <div class="pagination">
   {% block previouslink %}
   {% if page_obj.has_previous %}
-  <a href="?page{{ page_suffix }}={{ page_obj.previous_page_number }}{{ getvars }}" class="prev">{{ previous_link_decorator|safe }}{% trans "previous" %}</a>
+  {% if display_link_for_first_page and page_obj.previous_page_number == 1 %}
+  <a href="{{ getvars }}" class="prev">{{ previous_link_decorator|safe }}{% trans "previous" %}</a>
+  {% else %}
+  <a href="{% if disable_link_for_first_page and page_obj.previous_page_number != 1 %}?page{{ page_suffix }}={{ page_obj.previous_page_number }}{% endif %}{{ getvars }}" class="prev">{{ previous_link_decorator|safe }}{% trans "previous" %}</a>
+  {% endif %}
   {% else %}
   {% if display_disabled_previous_link %}
   <span class="disabled prev">{{ previous_link_decorator|safe }}{% trans "previous" %}</span>
@@ -17,7 +21,11 @@
   {% ifequal page page_obj.number %}
   <span class="current page">{{ page }}</span>
   {% else %}
+  {% if disable_link_for_first_page and page == 1 %}
+  <a href="{{ getvars }}" class="page">{{ page }}</a>
+  {% else %}
   <a href="?page{{ page_suffix }}={{ page }}{{ getvars }}" class="page">{{ page }}</a>
+  {% endif %}
   {% endifequal %}
   {% else %}
   ...

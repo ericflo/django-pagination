@@ -168,3 +168,7 @@ behavior of the pagination tags.  Here's an overview:
 ``PAGINATION_DISPLAY_DISABLED_NEXT_LINK``
     If set to ``False``, the next page link will not be displayed if there's no 
     next page. Defaults to False.
+
+``PAGINATION_DISABLE_LINK_FOR_FIRST_PAGE``
+    if set to ``False``, the first page will have ``?page=1`` link suffix in pagination displayed, otherwise is omitted.
+    Defaults to True.

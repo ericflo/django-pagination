@@ -306,6 +306,7 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
         new_context = {
             'MEDIA_URL': settings.MEDIA_URL,
             'STATIC_URL': getattr(settings, "STATIC_URL", None),
+            'disable_link_for_first_page': DISABLE_LINK_FOR_FIRST_PAGE,
             'display_disabled_next_link': DISPLAY_DISABLED_NEXT_LINK,
             'display_disabled_previous_link': DISPLAY_DISABLED_PREVIOUS_LINK,
             'display_page_links': DISPLAY_PAGE_LINKS,
