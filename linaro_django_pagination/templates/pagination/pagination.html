@@ -6,7 +6,7 @@
   {% if display_link_for_first_page and page_obj.previous_page_number == 1 %}
   <a href="{{ getvars }}" class="prev">{{ previous_link_decorator|safe }}{% trans "previous" %}</a>
   {% else %}
-  <a href="{% if disable_link_for_first_page and page_obj.previous_page_number != 1 %}?page{{ page_suffix }}={{ page_obj.previous_page_number }}{% endif %}{{ getvars }}" class="prev">{{ previous_link_decorator|safe }}{% trans "previous" %}</a>
+  <a href="?page{{ page_suffix }}={{ page_obj.previous_page_number }}{{ getvars }}" class="prev">{{ previous_link_decorator|safe }}{% trans "previous" %}</a>
   {% endif %}
   {% else %}
   {% if display_disabled_previous_link %}
