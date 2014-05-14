@@ -1,3 +1,5 @@
+There are a lot more contributors, please check the git history for details.
+
 Eric Florenzano <floguy@gmail.com>
 Martin Mahner <martin@mahner.org>
 James Tauber <jtauber@gmail.com>

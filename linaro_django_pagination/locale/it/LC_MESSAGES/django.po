@@ -1,0 +1,24 @@
+# django-pagination Italian translation
+# Copyright (c) 2010 Fabio Corneti <info@corneti.com>
+# This file is distributed under the same license as the django-pagination package.
+# Fabio Corneti <info@corneti.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: linaro-django-pagination-master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-04-22 12:04+0200\n"
+"PO-Revision-Date: 2012-01-26 11:26+0100\n"
+"Last-Translator: Fabio Corneti <info@corneti.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/pagination/default.html:6 templates/pagination/default.html:9
+msgid "previous"
+msgstr "precedenti"
+
+#: templates/pagination/default.html:30 templates/pagination/default.html:33
+msgid "next"
+msgstr "successive"

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright (c) 2008, Eric Florenzano
 # Copyright (c) 2010, 2011 Linaro Limited
 # All rights reserved.
@@ -29,42 +28,29 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from setuptools import setup, find_packages
+
+from django.conf import settings
 
 
-setup(
-    name='linaro-django-pagination',
-    # Magic version handling with versiontools
-    version=":versiontools:linaro_django_pagination:__version__",
-    author='Zygmunt Krynicki',
-    author_email='zygmunt.krynicki@linaro.org',
-    description="linaro-django-pagination",
-    long_description=open("README").read(),
-    keywords='pagination,django',
-    url='https://github.com/zyga/django-pagination',
-    test_suite='linaro_django_pagination.test_project.tests.run_tests',
-    license='BSD',
-    packages=find_packages(),
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Environment :: Web Environment",
-        "Framework :: Django",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: BSD License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-    ],
-    install_requires=[
-        'django >= 1.2',
-    ],
-    tests_require=[
-        'django-testproject >= 0.1',
-    ],
-    setup_requires=[
-        'versiontools >= 1.3.1'
-    ],
-    include_package_data=True,
-)
+DEFAULT_PAGINATION = getattr(
+    settings, 'PAGINATION_DEFAULT_PAGINATION', 20)
+DEFAULT_WINDOW = getattr(
+    settings, 'PAGINATION_DEFAULT_WINDOW', 4)
+DEFAULT_MARGIN = getattr(
+    settings, 'PAGINATION_DEFAULT_MARGIN', DEFAULT_WINDOW)
+DEFAULT_ORPHANS = getattr(
+    settings, 'PAGINATION_DEFAULT_ORPHANS', 0)
+INVALID_PAGE_RAISES_404 = getattr(
+    settings, 'PAGINATION_INVALID_PAGE_RAISES_404', False)
+DISPLAY_PAGE_LINKS = getattr(
+    settings, 'PAGINATION_DISPLAY_PAGE_LINKS', True)
+PREVIOUS_LINK_DECORATOR = getattr(
+    settings, 'PAGINATION_PREVIOUS_LINK_DECORATOR', "&lsaquo;&lsaquo; ")
+NEXT_LINK_DECORATOR = getattr(
+    settings, 'PAGINATION_NEXT_LINK_DECORATOR', " &rsaquo;&rsaquo;")
+DISPLAY_DISABLED_PREVIOUS_LINK = getattr(
+    settings, 'PAGINATION_DISPLAY_DISABLED_PREVIOUS_LINK', False)
+DISPLAY_DISABLED_NEXT_LINK = getattr(
+    settings, 'PAGINATION_DISPLAY_DISABLED_NEXT_LINK', False)
+DISABLE_LINK_FOR_FIRST_PAGE = getattr(
+    settings, 'PAGINATION_DISABLE_LINK_FOR_FIRST_PAGE', True)

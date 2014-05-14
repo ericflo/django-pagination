@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# Copyright (c) 2008, Eric Florenzano
 # Copyright (c) 2010, 2011 Linaro Limited
 # All rights reserved.
 #
@@ -29,42 +27,28 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from setuptools import setup, find_packages
+import sys
+import os
+
+# Add this directory to path so that 'example' can be imported later
+# below. Without this the runner will fail when started via ``setup.py
+# test``
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
+from django_testproject.settings import gen_settings
 
 
-setup(
-    name='linaro-django-pagination',
-    # Magic version handling with versiontools
-    version=":versiontools:linaro_django_pagination:__version__",
-    author='Zygmunt Krynicki',
-    author_email='zygmunt.krynicki@linaro.org',
-    description="linaro-django-pagination",
-    long_description=open("README").read(),
-    keywords='pagination,django',
-    url='https://github.com/zyga/django-pagination',
-    test_suite='linaro_django_pagination.test_project.tests.run_tests',
-    license='BSD',
-    packages=find_packages(),
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Environment :: Web Environment",
-        "Framework :: Django",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: BSD License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-    ],
-    install_requires=[
-        'django >= 1.2',
-    ],
-    tests_require=[
-        'django-testproject >= 0.1',
-    ],
-    setup_requires=[
-        'versiontools >= 1.3.1'
-    ],
-    include_package_data=True,
-)
+locals().update(
+    gen_settings(
+        INSTALLED_APPS=[
+            'example',
+            'linaro_django_pagination'],
+        MIDDLEWARE_CLASSES=[
+            'linaro_django_pagination.middleware.PaginationMiddleware'],
+        TEMPLATE_CONTEXT_PROCESSORS=[
+            # Request processor needs to be enabled
+            'django.core.context_processors.request'],
+        ROOT_URLCONF="linaro_django_pagination.test_project.urls"),
+        TEMPLATE_LOADERS = ['django.template.loaders.app_directories.Loader'],
+        SECRET_KEY = 'not for production',
+    )
