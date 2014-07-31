@@ -6,8 +6,11 @@ except NameError:
 from django import template
 from django.template import TOKEN_BLOCK
 from django.http import Http404
-from django.core.paginator import Paginator, InvalidPage
+from django.core.paginator import InvalidPage
 from django.conf import settings
+
+from pagination.paginator import ConcretePaginator
+
 
 register = template.Library()
 
@@ -99,7 +102,7 @@ class AutoPaginateNode(template.Node):
             paginate_by = self.paginate_by
         else:
             paginate_by = self.paginate_by.resolve(context)
-        paginator = Paginator(value, paginate_by, self.orphans)
+        paginator = ConcretePaginator(value, paginate_by, self.orphans)
         try:
             page_obj = paginator.page(context['request'].page(page_suffix))
         except InvalidPage:

@@ -1,5 +1,25 @@
 from django.core.paginator import Paginator, Page, PageNotAnInteger, EmptyPage
 
+
+class ConcretePaginator(Paginator):
+    """
+    Fix on the Django paginator that now uses an xrange, which isn't
+    compatible with the slicing that goes on in the template tags here.
+    """
+
+    def _get_page_range(self):
+        """
+        Returns a 1-based range of pages for iterating through within
+        a template for loop.
+        """
+        r = super(ConcretePaginator, self)._get_page_range()
+        if not isinstance(r, list):
+            r = list(r)
+        return r
+    page_range = property(_get_page_range)
+
+
+
 class InfinitePaginator(Paginator):
     """
     Paginator designed for cases when it's not important to know how many total
