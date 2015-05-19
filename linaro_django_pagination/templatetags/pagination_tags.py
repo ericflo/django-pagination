@@ -37,11 +37,16 @@ from django.template import (
     Context,
     Library,
     Node,
-    TOKEN_BLOCK,
     TemplateSyntaxError,
     Variable,
     loader,
 )
+
+try:
+    from django.template.base import TOKEN_BLOCK
+except ImportError:     # Django < 1.8
+    from django.template import TOKEN_BLOCK
+
 from django.template.loader import select_template
 from django.utils.text import unescape_string_literal
 
