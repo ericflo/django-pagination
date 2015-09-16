@@ -4,7 +4,7 @@ except NameError:
     from sets import Set as set
 
 from django import template
-from django.template import TOKEN_BLOCK
+from django.template.base import TOKEN_BLOCK
 from django.http import Http404
 from django.core.paginator import InvalidPage
 from django.conf import settings
