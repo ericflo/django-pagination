@@ -224,7 +224,6 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             pages.extend(differenced)
         to_return = {
             'MEDIA_URL': settings.MEDIA_URL,
-            'request': context['request'],
             'pages': pages,
             'records': records,
             'page_obj': page_obj,
@@ -234,6 +233,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'page_suffix': page_suffix,
         }
         if 'request' in context:
+            to_return['request'] = context['request']
             getvars = context['request'].GET.copy()
             if 'page%s' % page_suffix in getvars:
                 del getvars['page%s' % page_suffix]
