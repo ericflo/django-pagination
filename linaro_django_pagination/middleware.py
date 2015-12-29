@@ -35,7 +35,12 @@ def get_page(self, suffix):
     integer representing the current page.
     """
     try:
-        return int(self.REQUEST['page%s' % suffix])
+        # REQUEST is deprecated as of Django 1.7.
+        key = 'page%s' % suffix
+        value = self.POST.get(key)
+        if value is None:
+            value = self.GET.get(key)
+        return int(value)
     except (KeyError, ValueError, TypeError):
         return 1
 
