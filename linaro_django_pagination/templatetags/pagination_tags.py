@@ -268,7 +268,7 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
         paginator = context['paginator']
         page_obj = context['page_obj']
         page_suffix = context.get('page_suffix', '')
-        page_range = paginator.page_range
+        page_range = list(paginator.page_range)
         # Calculate the record range in the current page for display.
         records = {'first': 1 + (page_obj.number - 1) * paginator.per_page}
         records['last'] = records['first'] + paginator.per_page - 1
