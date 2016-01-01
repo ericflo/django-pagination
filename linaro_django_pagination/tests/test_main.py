@@ -170,30 +170,30 @@
 >>> class HttpRequest(DjangoHttpRequest):
 ...     page = lambda self, suffix: 1
 
->>> t.render(Context({'var': range(21), 'request': HttpRequest()}))
+>>> t.render(Context({'var': range(21), 'request': HttpRequest()})) #doctest: +ELLIPSIS
 u'\\n...\\n...<div class="pagination">...
 >>>
 >>> t = Template("{% load pagination_tags %}{% autopaginate var %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'request': HttpRequest()}))
+>>> t.render(Context({'var': range(21), 'request': HttpRequest()})) #doctest: +ELLIPSIS
 u'\\n...\\n...<div class="pagination">...
 >>> t = Template("{% load pagination_tags %}{% autopaginate var 20 %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'request': HttpRequest()}))
+>>> t.render(Context({'var': range(21), 'request': HttpRequest()})) #doctest: +ELLIPSIS
 u'\\n...\\n...<div class="pagination">...
 >>> t = Template("{% load pagination_tags %}{% autopaginate var by %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'by': 20, 'request': HttpRequest()}))
+>>> t.render(Context({'var': range(21), 'by': 20, 'request': HttpRequest()})) #doctest: +ELLIPSIS
 u'\\n...\\n...<div class="pagination">...<a href="?page=2"...
 >>> t = Template("{% load pagination_tags %}{% autopaginate var by as foo %}{{ foo }}")
 >>> t.render(Context({'var': range(21), 'by': 20, 'request': HttpRequest()}))
 u'[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]'
 >>>
 >>> t = Template("{% load pagination_tags %}{% autopaginate var2 by as foo2 %}{% paginate %}{% autopaginate var by as foo %}{% paginate %}")
->>> t.render(Context({'var': range(21), 'var2': range(50, 121), 'by': 20, 'request': HttpRequest()}))
+>>> t.render(Context({'var': range(21), 'var2': range(50, 121), 'by': 20, 'request': HttpRequest()})) #doctest: +ELLIPSIS
 u'\\n...\\n...<div class="pagination">...<a href="?page_var2=2"...<a href="?page_var=2"...
 >>>
 
 # Testing InfinitePaginator
 
->>> from paginator import InfinitePaginator
+>>> from linaro_django_pagination.paginator import InfinitePaginator
 
 >>> InfinitePaginator
 <class 'linaro_django_pagination.paginator.InfinitePaginator'>
@@ -222,7 +222,7 @@ False
 
 # Testing FinitePaginator
 
->>> from paginator import FinitePaginator
+>>> from linaro_django_pagination.paginator import FinitePaginator
 
 >>> FinitePaginator
 <class 'linaro_django_pagination.paginator.FinitePaginator'>
