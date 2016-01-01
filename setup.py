@@ -39,7 +39,7 @@ setup(
     author='Zygmunt Krynicki',
     author_email='zygmunt.krynicki@linaro.org',
     description="linaro-django-pagination",
-    long_description=open("README").read(),
+    long_description=open("README.rst").read(),
     keywords='pagination,django',
     url='https://github.com/zyga/django-pagination',
     test_suite='linaro_django_pagination.test_project.tests.run_tests',
