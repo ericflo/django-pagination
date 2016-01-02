@@ -209,6 +209,38 @@ class ZeroWindowZeroMarginTestCase(SimpleTestCase):
         )
 
 
+class NoEllipsisTestCase(SimpleTestCase):
+    """
+    Tests a case where should be no any ellipsis pages.
+    """
+    def setUp(self):
+        self.p = Paginator(range(100), 25)
+
+    def test_on_start(self):
+        self.assertListEqual(
+            paginate({'paginator': self.p, 'page_obj': self.p.page(1)}, 2, 0)['pages'],
+            [1, 2, 3, 4],
+        )
+
+    def test_in_middle_page_2(self):
+        self.assertListEqual(
+            paginate({'paginator': self.p, 'page_obj': self.p.page(2)}, 2, 0)['pages'],
+            [1, 2, 3, 4],
+        )
+
+    def test_in_middle_page_3(self):
+        self.assertListEqual(
+            paginate({'paginator': self.p, 'page_obj': self.p.page(3)}, 2, 0)['pages'],
+            [1, 2, 3, 4],
+        )
+
+    def test_on_end(self):
+        self.assertListEqual(
+            paginate({'paginator': self.p, 'page_obj': self.p.page(4)}, 2, 0)['pages'],
+            [1, 2, 3, 4],
+        )
+
+
 class SpecialTestCase(SimpleTestCase):
     def test_middle_with_no_window_and_margin_1(self):
         p = Paginator(range(31), 2)

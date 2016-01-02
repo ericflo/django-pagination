@@ -284,7 +284,7 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
             window_end = window_end - window_start
             window_start = 0
         if window_end > paginator.num_pages:
-            window_start = window_start - (window_end - paginator.num_pages)
+            window_start = max(0, window_start - (window_end - paginator.num_pages))
             window_end = paginator.num_pages
         pages = page_range[window_start:window_end]
 
