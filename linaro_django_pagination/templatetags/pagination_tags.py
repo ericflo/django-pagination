@@ -140,7 +140,11 @@ class AutoPaginateNode(Node):
         self.multiple_paginations = multiple_paginations
 
     def render(self, context):
-        if self.multiple_paginations or getattr(context, "paginator", None):
+        # Save multiple_paginations state in context
+        if self.multiple_paginations and 'multiple_paginations' not in context:
+            context['multiple_paginations'] = True
+
+        if context.get('multiple_paginations') or getattr(context, "paginator", None):
             page_suffix = '_%s' % self.queryset_var
         else:
             page_suffix = ''
@@ -170,7 +174,7 @@ class AutoPaginateNode(Node):
                     'False, an HTTP 404 page would have been shown instead.')
             context[key] = []
             context['invalid_page'] = True
-            return u''
+            return ''
         if self.context_var is not None:
             context[self.context_var] = page_obj.object_list
         else:
@@ -178,7 +182,7 @@ class AutoPaginateNode(Node):
         context['paginator'] = paginator
         context['page_obj'] = page_obj
         context['page_suffix'] = page_suffix
-        return u''
+        return ''
 
 
 class PaginateNode(Node):
@@ -264,7 +268,7 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
         paginator = context['paginator']
         page_obj = context['page_obj']
         page_suffix = context.get('page_suffix', '')
-        page_range = paginator.page_range
+        page_range = list(paginator.page_range)
         # Calculate the record range in the current page for display.
         records = {'first': 1 + (page_obj.number - 1) * paginator.per_page}
         records['last'] = records['first'] + paginator.per_page - 1
@@ -280,7 +284,7 @@ def paginate(context, window=DEFAULT_WINDOW, margin=DEFAULT_MARGIN):
             window_end = window_end - window_start
             window_start = 0
         if window_end > paginator.num_pages:
-            window_start = window_start - (window_end - paginator.num_pages)
+            window_start = max(0, window_start - (window_end - paginator.num_pages))
             window_end = paginator.num_pages
         pages = page_range[window_start:window_end]
 
