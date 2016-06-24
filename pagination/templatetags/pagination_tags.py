@@ -135,7 +135,8 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
     try:
         paginator = context['paginator']
         page_obj = context['page_obj']
-        page_range = paginator.page_range
+        # list() -- because python2 cannot take slices of xranges
+        page_range = list(paginator.page_range)
         # Calculate the record range in the current page for display.
         records = {'first': 1 + (page_obj.number - 1) * paginator.per_page}
         records['last'] = records['first'] + paginator.per_page - 1
