@@ -1,10 +1,22 @@
+============
+Installation
+============
+
+Installing via pip
+-------------------------
+
+If you have pip_ installed, you can simply run the following command
+to install django-pagination:
+
+    pip install django-pagination
+
 Installing the latest development version of django-pagination
 ---------------------------------------------------------------
 
 To install, first check out the latest version of the application from
 subversion:
 
-    svn co http://django-pagination.googlecode.com/svn/trunk django-pagination
+    git clone git@github.com:ericflo/django-pagination.git
 
 Now, link the inner ``pagination`` project to your Python path:
 
@@ -29,12 +41,4 @@ following command:
 
 Once that's done, you should be able to begin using django-pagination at will.
 
-Installing via setuptools
--------------------------
-
-If you have setuptools_ installed, you can simply run the following command
-to install django-pagination:
-
-    sudo easy_install django-pagination
-
-.. _setuptools: http://peak.telecommunity.com/DevCenter/setuptools
+.. _pip: http://pypi.python.org/pypi/pip
