@@ -4,10 +4,13 @@ except NameError:
     from sets import Set as set
 
 from django import template
-from django.template import TOKEN_BLOCK
+from django.template.base import TOKEN_BLOCK
 from django.http import Http404
-from django.core.paginator import Paginator, InvalidPage
+from django.core.paginator import InvalidPage
 from django.conf import settings
+
+from pagination.paginator import ConcretePaginator
+
 
 register = template.Library()
 
@@ -21,12 +24,12 @@ def do_autopaginate(parser, token):
     """
     Splits the arguments to the autopaginate tag and formats them correctly.
     """
-    
     # Check whether there are any other autopaginations are later in this template
     expr = lambda obj: (obj.token_type == TOKEN_BLOCK and \
         len(obj.split_contents()) > 0 and obj.split_contents()[0] == "autopaginate")
-    multiple_paginations = len(filter(expr, parser.tokens)) > 0
-    
+
+    multiple_paginations = any((expr(tok) for tok in parser.tokens))
+
     split = token.split_contents()
     as_index = None
     context_var = None
@@ -99,7 +102,7 @@ class AutoPaginateNode(template.Node):
             paginate_by = self.paginate_by
         else:
             paginate_by = self.paginate_by.resolve(context)
-        paginator = Paginator(value, paginate_by, self.orphans)
+        paginator = ConcretePaginator(value, paginate_by, self.orphans)
         try:
             page_obj = paginator.page(context['request'].page(page_suffix))
         except InvalidPage:
@@ -221,7 +224,6 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             pages.extend(differenced)
         to_return = {
             'MEDIA_URL': settings.MEDIA_URL,
-            'request': context['request'],
             'pages': pages,
             'records': records,
             'page_obj': page_obj,
@@ -231,6 +233,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'page_suffix': page_suffix,
         }
         if 'request' in context:
+            to_return['request'] = context['request']
             getvars = context['request'].GET.copy()
             if 'page%s' % page_suffix in getvars:
                 del getvars['page%s' % page_suffix]
@@ -239,7 +242,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             else:
                 to_return['getvars'] = ''
         return to_return
-    except KeyError, AttributeError:
+    except (KeyError, AttributeError):
         return {}
 
 register.inclusion_tag('pagination/pagination.html', takes_context=True)(

@@ -2,15 +2,26 @@ import sys
 sys.path.append('..')
 
 import os
-# Make a backup of DJANGO_SETTINGS_MODULE environment variable to restore later.
-backup = os.environ.get('DJANGO_SETTINGS_MODULE', '')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
-from django.test.simple import run_tests
+import django
+from django.conf import settings
+from django.test.utils import get_runner
 
-if __name__ == "__main__":
-    failures = run_tests(['pagination',], verbosity=9)
+
+def main():
+    backup = os.environ.get('DJANGO_SETTINGS_MODULE', '')
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+    django.setup()
+    TestRunner = get_runner(settings)
+    test_runner = TestRunner()
+
+    failures = test_runner.run_tests(['pagination',], verbosity=9)
     if failures:
         sys.exit(failures)
+
     # Reset the DJANGO_SETTINGS_MODULE to what it was before running tests.
     os.environ['DJANGO_SETTINGS_MODULE'] = backup
+
+if __name__ == "__main__":
+    main()
