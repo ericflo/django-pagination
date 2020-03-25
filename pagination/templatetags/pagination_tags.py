@@ -124,7 +124,7 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
     Renders the ``pagination/pagination.html`` template, resulting in a
     Digg-like display of the available pages, given the current page.  If there
     are too many pages to be displayed before and after the current page, then
-    elipses will be used to indicate the undisplayed gap between page numbers.
+    ellipses will be used to indicate the undisplayed gap between page numbers.
     
     Requires one argument, ``context``, which should be a dictionary-like data
     structure and must contain the following keys:
