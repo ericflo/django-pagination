@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.1.2'
+version = '1.1.3'
 
 LONG_DESCRIPTION = """
 How to use django-pagination-py3
@@ -116,7 +116,7 @@ setup(
     keywords='pagination,django',
     author='Agustin Mendez',
     author_email='matagus@gmail.com',
-    url='',
+    url='https://github.com/matagus/django-pagination-py3',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,
