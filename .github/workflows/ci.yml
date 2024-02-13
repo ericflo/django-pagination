@@ -1,0 +1,46 @@
+name: CI
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    strategy:
+      max-parallel: 2
+      fail-fast: true
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        django-version: ["4.0", "4.1", "4.2", "5.0"]
+        os: [ubuntu-latest]
+        exclude:
+          - django-version: "4.0"
+            python-version: "3.11"
+          - django-version: "4.0"
+            python-version: "3.12"
+          - django-version: "4.1"
+            python-version: "3.12"
+          - django-version: "5.0"
+            python-version: "3.8"
+          - django-version: "5.0"
+            python-version: "3.9"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade hatch
+      - name: Run tests for Python ${{ matrix.python-version }} and Django ${{ matrix.django-version }} on ${{ matrix.os }} with coverage report
+        run: |
+          hatch run test.py${{ matrix.python-version }}-${{ matrix.django-version }}:cov
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
