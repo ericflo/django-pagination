@@ -1,0 +1,99 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-pagination-py3"
+dynamic = ["version"]
+description = "A port of ericflo/django-pagination to Python 3 and beyond!"
+readme = "README.md"
+license = "BSD-2-clause"
+authors = [
+    { name = "Agustin Mendez", email = "matagus@gmail.com" },
+]
+keywords = [
+    "django",
+    "pagination",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.0",
+    "Framework :: Django :: 4.1",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "Django>=4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/matagus/django-pagination-py3"
+Issues = "https://github.com/matagus/django-pagination-py3/issues"
+Changelog = "https://github.com/matagus/django-pagination-py3/releases"
+Repository = "https://github.com/matagus/django-pagination-py3"
+PyPI = "https://pypi.org/project/django-pagination-py3"
+
+[tool.hatch.version]
+path = "pagination/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/pagination",
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "/pagination",
+]
+
+[tool.hatch.envs.default]
+dependencies = [
+    "Django>=4.0", "ipython", "ipdb", "mypy", "typing-extensions"
+]
+
+# Test environment
+[[tool.hatch.envs.test.matrix]]
+django = ["4.0"]
+python = ["3.8", "3.9", "3.10"]
+
+[[tool.hatch.envs.test.matrix]]
+django = ["4.1"]
+python = ["3.9", "3.10", "3.11"]
+
+[[tool.hatch.envs.test.matrix]]
+django = ["4.2"]
+python = ["3.9", "3.10", "3.11", "3.12"]
+
+[[tool.hatch.envs.test.matrix]]
+django = ["5.0"]
+python = ["3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.test]
+dependencies = ["coverage[toml]", "django~={matrix:django}.0"]
+
+[tool.hatch.envs.test.scripts]
+test = "python -m django test --settings tests.settings"
+test-cov = "coverage run -m django test --settings tests.settings"
+cov-report = ["coverage json", "coverage report"]
+cov = ["test-cov", "cov-report"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.black]
+line-length = 120
