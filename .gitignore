@@ -4,3 +4,5 @@ dist
 env/
 .idea/
 build/
+.coverage
+coverage.json
